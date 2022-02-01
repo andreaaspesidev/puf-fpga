@@ -1,5 +1,6 @@
 *
 !*/
 !Sources/**
+!Analysis/**
 !*.xpr
 !.gitignore
