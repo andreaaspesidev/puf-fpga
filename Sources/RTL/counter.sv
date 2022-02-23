@@ -20,7 +20,16 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module counter(
+module counter#(
+    parameter NUM_BITS = 32
+)
 
-    );
+(
+    input arst,
+
+    input signal_in,
+    input enable,
+
+    output [NUM_BITS-1 : 0] count
+);
 endmodule

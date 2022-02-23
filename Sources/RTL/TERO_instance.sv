@@ -21,6 +21,12 @@
 
 
 module TERO_instance(
+        input clk,
 
+        input enable_1,
+        input enable_2,
+
+        output dout_1,
+        output dout_2
     );
 endmodule
