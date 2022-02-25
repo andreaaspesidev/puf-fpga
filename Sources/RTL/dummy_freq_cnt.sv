@@ -31,7 +31,7 @@ module dummy_freq_cnt #(
     input increment,
     input reset,
     
-    output reg [N_TERO_BITS-1:0] next_TERO // number of next TERO to select
+    output reg [N_TERO_BITS-1:0] next_TERO = 0 // number of next TERO to select
 
 );
 
