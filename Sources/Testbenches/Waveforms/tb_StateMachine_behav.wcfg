@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_StateMachine_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="tb_StateMachine" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="675416fs"></ZoomStartTime>
+      <ZoomEndTime time="794917fs"></ZoomEndTime>
+      <Cursor1Time time="775000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="276"></NameColumnWidth>
+      <ValueColumnWidth column_width="116"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="20" />
+   <wvobject fp_name="divider30" type="divider">
+      <obj_property name="label">Clk and RESET</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_StateMachine/clk">
+      <obj_property name="ElementShortName">clk</obj_property>
+      <obj_property name="ObjectShortName">clk</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_StateMachine/reset">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider31" type="divider">
+      <obj_property name="label">DUT inputs</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_StateMachine/start">
+      <obj_property name="ElementShortName">start</obj_property>
+      <obj_property name="ObjectShortName">start</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_StateMachine/challenge">
+      <obj_property name="ElementShortName">challenge[3:0]</obj_property>
+      <obj_property name="ObjectShortName">challenge[3:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_StateMachine/next_enable">
+      <obj_property name="ElementShortName">next_enable</obj_property>
+      <obj_property name="ObjectShortName">next_enable</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider32" type="divider">
+      <obj_property name="label">DUT outputs</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_StateMachine/done">
+      <obj_property name="ElementShortName">done</obj_property>
+      <obj_property name="ObjectShortName">done</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_StateMachine/reset_puf">
+      <obj_property name="ElementShortName">reset_puf</obj_property>
+      <obj_property name="ObjectShortName">reset_puf</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_StateMachine/select_puf">
+      <obj_property name="ElementShortName">select_puf[2:0]</obj_property>
+      <obj_property name="ObjectShortName">select_puf[2:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_StateMachine/enable_puf">
+      <obj_property name="ElementShortName">enable_puf</obj_property>
+      <obj_property name="ObjectShortName">enable_puf</obj_property>
+   </wvobject>
+   <wvobject fp_name="divider35" type="divider">
+      <obj_property name="label">Internal dut signals</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_StateMachine/StateMachine_dut/store_response_puf">
+      <obj_property name="ElementShortName">store_response_puf</obj_property>
+      <obj_property name="ObjectShortName">store_response_puf</obj_property>
+   </wvobject>
+   <wvobject type="group" fp_name="group36">
+      <obj_property name="label">Delay Counter</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="logic" fp_name="/tb_StateMachine/StateMachine_dut/en_del_cnt">
+         <obj_property name="ElementShortName">en_del_cnt</obj_property>
+         <obj_property name="ObjectShortName">en_del_cnt</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_StateMachine/StateMachine_dut/reset_del_cnt">
+         <obj_property name="ElementShortName">reset_del_cnt</obj_property>
+         <obj_property name="ObjectShortName">reset_del_cnt</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_StateMachine/StateMachine_dut/del_cnt">
+         <obj_property name="ElementShortName">del_cnt[15:0]</obj_property>
+         <obj_property name="ObjectShortName">del_cnt[15:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="group" fp_name="group37">
+      <obj_property name="label">TERO counter</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="logic" fp_name="/tb_StateMachine/StateMachine_dut/inc_TERO_cnt">
+         <obj_property name="ElementShortName">inc_TERO_cnt</obj_property>
+         <obj_property name="ObjectShortName">inc_TERO_cnt</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_StateMachine/StateMachine_dut/reset_TERO_cnt">
+         <obj_property name="ElementShortName">reset_TERO_cnt</obj_property>
+         <obj_property name="ObjectShortName">reset_TERO_cnt</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_StateMachine/StateMachine_dut/TERO_cnt">
+         <obj_property name="ElementShortName">TERO_cnt[2:0]</obj_property>
+         <obj_property name="ObjectShortName">TERO_cnt[2:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="group" fp_name="group38">
+      <obj_property name="label">Repetitions counter</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="logic" fp_name="/tb_StateMachine/StateMachine_dut/en_rep_cnt">
+         <obj_property name="ElementShortName">en_rep_cnt</obj_property>
+         <obj_property name="ObjectShortName">en_rep_cnt</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_StateMachine/StateMachine_dut/reset_rep_cnt">
+         <obj_property name="ElementShortName">reset_rep_cnt</obj_property>
+         <obj_property name="ObjectShortName">reset_rep_cnt</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_StateMachine/StateMachine_dut/rep_cnt">
+         <obj_property name="ElementShortName">rep_cnt[15:0]</obj_property>
+         <obj_property name="ObjectShortName">rep_cnt[15:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_StateMachine/StateMachine_dut/state">
+      <obj_property name="ElementShortName">state[2:0]</obj_property>
+      <obj_property name="ObjectShortName">state[2:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_StateMachine/StateMachine_dut/next_state">
+      <obj_property name="ElementShortName">next_state[2:0]</obj_property>
+      <obj_property name="ObjectShortName">next_state[2:0]</obj_property>
+   </wvobject>
+   <wvobject type="group" fp_name="group33">
+      <obj_property name="label">Parameters</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="array" fp_name="/tb_StateMachine/NUM_LOOPS">
+         <obj_property name="ElementShortName">NUM_LOOPS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">NUM_LOOPS[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_StateMachine/REPETITIONS_BITS">
+         <obj_property name="ElementShortName">REPETITIONS_BITS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">REPETITIONS_BITS[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_StateMachine/REPETITIONS">
+         <obj_property name="ElementShortName">REPETITIONS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">REPETITIONS[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_StateMachine/EVAL_TIME_BITS">
+         <obj_property name="ElementShortName">EVAL_TIME_BITS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">EVAL_TIME_BITS[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_StateMachine/EVAL_TIME">
+         <obj_property name="ElementShortName">EVAL_TIME[31:0]</obj_property>
+         <obj_property name="ObjectShortName">EVAL_TIME[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_StateMachine/CHALLENGE_BITS">
+         <obj_property name="ElementShortName">CHALLENGE_BITS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">CHALLENGE_BITS[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_StateMachine/RESET_CYCLES">
+         <obj_property name="ElementShortName">RESET_CYCLES[31:0]</obj_property>
+         <obj_property name="ObjectShortName">RESET_CYCLES[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
