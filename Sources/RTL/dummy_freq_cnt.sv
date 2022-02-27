@@ -32,23 +32,24 @@ module dummy_freq_cnt #(
     input reset,
     
     output reg [$clog2(NUM_LOOPS-1):0] next_TERO = 0, // number of next TERO to select
-    output reg done // Asserted when the last tero is supplied
+    output done // Asserted when the last tero is supplied
 );
     localparam last_TERO = NUM_LOOPS - 1;
     
-    //assign next_TERO = curr_TERO + 1; //in this dummy implementation the next TERO is the current one + 1
-    always @(*)
-    begin
-        if (reset == 1'b1)
-        begin
-            done <= '0;
-        end
-        else if (next_TERO == last_TERO)
-        begin
-            done <= '1;
-        end
-    end
 
+    assign done = (next_TERO == last_TERO); //done output is combinatorial and asserted when the last TERO is supplied
+
+    /*always @(next_TERO,clk) //this should do the same thing as the previous assign statement, but it doesn't work if you don't insert clk inside the sensitivity list (in implementation this should be ok anyway)
+    begin
+        done = 1'b0;
+
+        if (next_TERO == last_TERO)
+        begin
+            done = 1'b1;
+        end
+    end*/
+
+    //assign next_TERO = curr_TERO + 1; //in this dummy implementation the next TERO is the current one + 1
     always@(posedge(clk))
     begin
         if (reset == 1'b1)
