@@ -1,7 +1,7 @@
-
 // 
 // Module: uart_rx 
-// 
+// Origin: https://github.com/ben-marshall/uart
+//
 // Notes:
 // - UART reciever module.
 //
@@ -12,16 +12,14 @@ module uart_rx #(
     parameter   PAYLOAD_BITS    = 8, // Number of data bits recieved per UART packet.
     parameter   STOP_BITS       = 1 // Number of stop bits indicating the end of a packet.
 
-)
-
-(
-input  wire       clk          , // Top level system clock input.
-input  wire       resetn       , // Asynchronous active low reset.
-input  wire       uart_rxd     , // UART Recieve pin.
-input  wire       uart_rx_en   , // Recieve enable
-output wire       uart_rx_break, // Did we get a BREAK message?
-output wire       uart_rx_valid, // Valid data recieved and available.
-output reg  [PAYLOAD_BITS-1:0] uart_rx_data   // The recieved data.
+) (
+    input  wire       clk          , // Top level system clock input.
+    input  wire       resetn       , // Asynchronous active low reset.
+    input  wire       uart_rxd     , // UART Recieve pin.
+    input  wire       uart_rx_en   , // Recieve enable
+    output wire       uart_rx_break, // Did we get a BREAK message?
+    output wire       uart_rx_valid, // Valid data recieved and available.
+    output reg  [PAYLOAD_BITS-1:0] uart_rx_data   // The recieved data.
 );
 
 // --------------------------------------------------------------------------- 
