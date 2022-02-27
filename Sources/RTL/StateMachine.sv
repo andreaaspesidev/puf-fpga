@@ -151,7 +151,7 @@ module StateMachine #(
 
         store_response_puf = 0;
 
-        done = '0;
+        done = 0;
 
         next_state = state; // if not explicited, stay in current state
 
@@ -208,7 +208,7 @@ module StateMachine #(
 
             TERO_SELECT: begin //if last TERO, go to DONE
                 if(TERO_cnt_done == 1'b1) begin  //when we have N tero loops, we have TERO_cnt_done = 1 when N-1 is the next tero selected
-                    //reset_TERO_cnt = 1'b1; bugged
+                    reset_TERO_cnt = 1'b1; //No more bugged
                     next_state = DONE;
                 end
                 else begin //else reset delay counter and go to init (start evaluation of next TERO)
@@ -221,7 +221,7 @@ module StateMachine #(
 
             DONE: begin
                 reset_TERO_cnt = 1'b1;  //reset moved here
-                done = 1; //set 'done' output to 1
+                done = 1'b1; //set 'done' output to 1
                 
                 if(start == 1'b0) // RESET MUST BE PERFORMED (?)
                     next_state = IDLE; //return to idle if start signal is '0'
