@@ -55,7 +55,7 @@ module PUF #(
 
 wire enable_core; 
 wire [$clog2(NUM_LOOPS-1):0] loop_select;
-wire next_enable;
+//wire next_enable;
 wire reset_puf;
 
 Core #(
@@ -85,7 +85,7 @@ StateMachine_inst (
 
   .start (start_puf),
   .challenge (challenge),
-  .next_enable (next_enable),
+  //.next_enable (next_enable),
   .done (done),
   .reset_puf (reset_puf),
   .select_puf (loop_select),

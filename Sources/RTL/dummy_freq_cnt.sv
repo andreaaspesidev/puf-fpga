@@ -21,7 +21,7 @@
 
 
 module dummy_freq_cnt #(
-    parameter N_TERO_BITS = 32,
+    parameter NUM_LOOPS = 32,
     parameter CHALLENGE_BITS = 4) (
 
     //input [N_TERO_BITS-1:0] curr_TERO, // number of current TERO selected
@@ -31,23 +31,34 @@ module dummy_freq_cnt #(
     input increment,
     input reset,
     
-    output reg [N_TERO_BITS-1:0] next_TERO = 0 // number of next TERO to select
-
+    output reg [$clog2(NUM_LOOPS-1):0] next_TERO = 0, // number of next TERO to select
+    output reg done // Asserted when the last tero is supplied
 );
-
+    localparam last_TERO = NUM_LOOPS - 1;
+    
     //assign next_TERO = curr_TERO + 1; //in this dummy implementation the next TERO is the current one + 1
-
-    always@(posedge(clk))
-
+    always @(*)
     begin
         if (reset == 1'b1)
-            next_TERO <= '0;
-        else if (increment == 1'b1)
+        begin
+            done <= '0;
+        end
+        else if (next_TERO == last_TERO)
+        begin
+            done <= '1;
+        end
+    end
 
+    always@(posedge(clk))
+    begin
+        if (reset == 1'b1)
+        begin
+            next_TERO <= '0;
+        end
+        else if (increment == 1'b1)
         begin
             next_TERO <= next_TERO + 1;
         end
-
     end
 
 

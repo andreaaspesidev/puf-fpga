@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="675416fs"></ZoomStartTime>
-      <ZoomEndTime time="794917fs"></ZoomEndTime>
-      <Cursor1Time time="775000fs"></Cursor1Time>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="148001fs"></ZoomEndTime>
+      <Cursor1Time time="405fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="276"></NameColumnWidth>
-      <ValueColumnWidth column_width="116"></ValueColumnWidth>
+      <ValueColumnWidth column_width="108"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="20" />
+   <WVObjectSize size="19" />
    <wvobject fp_name="divider30" type="divider">
       <obj_property name="label">Clk and RESET</obj_property>
       <obj_property name="DisplayName">label</obj_property>
@@ -43,10 +43,6 @@
    <wvobject type="array" fp_name="/tb_StateMachine/challenge">
       <obj_property name="ElementShortName">challenge[3:0]</obj_property>
       <obj_property name="ObjectShortName">challenge[3:0]</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/tb_StateMachine/next_enable">
-      <obj_property name="ElementShortName">next_enable</obj_property>
-      <obj_property name="ObjectShortName">next_enable</obj_property>
    </wvobject>
    <wvobject fp_name="divider32" type="divider">
       <obj_property name="label">DUT outputs</obj_property>
@@ -91,6 +87,7 @@
       <wvobject type="array" fp_name="/tb_StateMachine/StateMachine_dut/del_cnt">
          <obj_property name="ElementShortName">del_cnt[15:0]</obj_property>
          <obj_property name="ObjectShortName">del_cnt[15:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
    </wvobject>
    <wvobject type="group" fp_name="group37">
@@ -100,6 +97,10 @@
       <wvobject type="logic" fp_name="/tb_StateMachine/StateMachine_dut/inc_TERO_cnt">
          <obj_property name="ElementShortName">inc_TERO_cnt</obj_property>
          <obj_property name="ObjectShortName">inc_TERO_cnt</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_StateMachine/StateMachine_dut/TERO_cnt_done">
+         <obj_property name="ElementShortName">TERO_cnt_done</obj_property>
+         <obj_property name="ObjectShortName">TERO_cnt_done</obj_property>
       </wvobject>
       <wvobject type="logic" fp_name="/tb_StateMachine/StateMachine_dut/reset_TERO_cnt">
          <obj_property name="ElementShortName">reset_TERO_cnt</obj_property>
@@ -146,10 +147,12 @@
       <wvobject type="array" fp_name="/tb_StateMachine/REPETITIONS_BITS">
          <obj_property name="ElementShortName">REPETITIONS_BITS[31:0]</obj_property>
          <obj_property name="ObjectShortName">REPETITIONS_BITS[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_StateMachine/REPETITIONS">
          <obj_property name="ElementShortName">REPETITIONS[31:0]</obj_property>
          <obj_property name="ObjectShortName">REPETITIONS[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_StateMachine/EVAL_TIME_BITS">
          <obj_property name="ElementShortName">EVAL_TIME_BITS[31:0]</obj_property>
@@ -158,6 +161,7 @@
       <wvobject type="array" fp_name="/tb_StateMachine/EVAL_TIME">
          <obj_property name="ElementShortName">EVAL_TIME[31:0]</obj_property>
          <obj_property name="ObjectShortName">EVAL_TIME[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_StateMachine/CHALLENGE_BITS">
          <obj_property name="ElementShortName">CHALLENGE_BITS[31:0]</obj_property>
