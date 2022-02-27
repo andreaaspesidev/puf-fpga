@@ -29,10 +29,12 @@ module uart#(
     input [DATA_BITS-1 : 0] data_out,   // outgoing data
     input tx_enable,                    // when asserted, enable sending the outgoing data
     output tx_busy,                     // when sending, is asserted
+    output tx_pin,                      // TX board pin
     // ------- RX signals --------
     output [DATA_BITS-1 : 0] data_in,   // incoming data
     output rx_valid,                    // when asserted, incoming data is valid
-    input rx_enable                     // when asserted, enable the reception of data
+    input rx_enable,                    // when asserted, enable the reception of data
+    input rx_pin                        // RX board pin
 );
     // Local parameters
     localparam BIT_RATE = 9600;
