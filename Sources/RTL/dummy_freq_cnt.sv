@@ -36,18 +36,7 @@ module dummy_freq_cnt #(
 );
     localparam last_TERO = NUM_LOOPS - 1;
     
-
     assign done = (next_TERO == last_TERO); //done output is combinatorial and asserted when the last TERO is supplied
-
-    /*always @(next_TERO,clk) //this should do the same thing as the previous assign statement, but it doesn't work if you don't insert clk inside the sensitivity list (in implementation this should be ok anyway)
-    begin
-        done = 1'b0;
-
-        if (next_TERO == last_TERO)
-        begin
-            done = 1'b1;
-        end
-    end*/
 
     //assign next_TERO = curr_TERO + 1; //in this dummy implementation the next TERO is the current one + 1
     always@(posedge(clk))

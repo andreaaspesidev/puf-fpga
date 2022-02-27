@@ -45,7 +45,8 @@ module PUF #(
     input [CHALLENGE_BITS-1:0] challenge,
 
     //output from core
-    output [TOT_CNT_BITS-1:0] puf_response,
+    output [TOT_CNT_BITS-1:0] loop_response,
+    output [$clog2(NUM_LOOPS-1):0] loop_number,
 
     //output from StateMachine
     output store_response_puf,
@@ -54,8 +55,7 @@ module PUF #(
 );
 
 wire enable_core; 
-wire [$clog2(NUM_LOOPS-1):0] loop_select;
-//wire next_enable;
+//wire [$clog2(NUM_LOOPS-1):0] loop_select;
 wire reset_puf;
 
 Core #(
@@ -67,8 +67,8 @@ Core_inst (
   .clk (clk),
   .reset (reset_puf),
   .enable (enable_core),
-  .loop_select (loop_select),
-  .response  (puf_response)
+  .loop_select (loop_number),
+  .response  (loop_response)
 );
 
 StateMachine #(
@@ -85,10 +85,10 @@ StateMachine_inst (
 
   .start (start_puf),
   .challenge (challenge),
-  //.next_enable (next_enable),
+
   .done (done),
   .reset_puf (reset_puf),
-  .select_puf (loop_select),
+  .select_puf (loop_number),
   .enable_puf (enable_core),
   .store_response_puf  (store_response_puf)
 );

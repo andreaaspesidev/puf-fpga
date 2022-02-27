@@ -222,7 +222,7 @@ module StateMachine #(
             DONE: begin
                 done = 1'b1; //set 'done' output to 1
                 
-                if(start == 1'b0) // RESET MUST BE PERFORMED (?)
+                if(start == 1'b0)
                     next_state = IDLE; //return to idle if start signal is '0'
             end
 
