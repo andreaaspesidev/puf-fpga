@@ -48,7 +48,7 @@ module tb_StateMachine;
 
   initial begin
     begin
-        $stop;
+        //$stop;
         clk <= 0; //initialize clock to 0
         reset = 1; // initialize reset to 1
         start = 0; //initialize start to 0
@@ -64,7 +64,7 @@ module tb_StateMachine;
         start <= 1'b0; // set start to 0 again
 
         @(posedge(done)); //wait for the done signal to be 1
-        @(posedge(clk)); //wait another clock cycle
+        repeat(5) @(posedge(clk)); //wait another clock cycle
 
       $finish; //end the simulation
     end
