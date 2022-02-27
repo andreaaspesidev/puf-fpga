@@ -220,7 +220,6 @@ module StateMachine #(
             // ------------- end loop ----------------
 
             DONE: begin
-                reset_TERO_cnt = 1'b1;  //reset moved here
                 done = 1'b1; //set 'done' output to 1
                 
                 if(start == 1'b0) // RESET MUST BE PERFORMED (?)
