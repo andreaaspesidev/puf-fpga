@@ -132,7 +132,7 @@ always @(posedge clk) begin : p_recieved_data
 end
 
 //
-// Increments the bit counter when recieving.
+// Increments the bit counter when receiving.
 always @(posedge clk) begin : p_bit_counter
     if(!resetn) begin
         bit_counter <= 4'b0;
@@ -144,7 +144,7 @@ always @(posedge clk) begin : p_bit_counter
 end
 
 //
-// Sample the recieved bit when in the middle of a bit frame.
+// Sample the received bit when in the middle of a bit frame.
 always @(posedge clk) begin : p_bit_sample
     if(!resetn) begin
         bit_sample <= 1'b0;
@@ -155,7 +155,7 @@ end
 
 
 //
-// Increments the cycle counter when recieving.
+// Increments the cycle counter when receiving.
 always @(posedge clk) begin : p_cycle_counter
     if(!resetn) begin
         cycle_counter <= {COUNT_REG_LEN{1'b0}};

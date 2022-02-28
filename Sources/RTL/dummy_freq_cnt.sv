@@ -31,7 +31,7 @@ module dummy_freq_cnt #(
     input increment,
     input reset,
     
-    output reg [$clog2(NUM_LOOPS-1):0] next_TERO = 0, // number of next TERO to select
+    output reg [$clog2(NUM_LOOPS-1):0] next_TERO, // number of next TERO to select
     output done // Asserted when the last tero is supplied
 );
     localparam last_TERO = NUM_LOOPS - 1;

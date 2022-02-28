@@ -8,7 +8,7 @@
 
 module uart_tx#(
     parameter   BIT_RATE        = 9600, // Input bit rate of the UART line (bits / sec).
-    parameter   CLK_HZ          =    50_000_000, // Clock frequency in hertz.
+    parameter   CLK_HZ          = 50_000_000, // Clock frequency in hertz.
     parameter   PAYLOAD_BITS    = 8, // Number of data bits recieved per UART packet.
     parameter   STOP_BITS       = 1 // Number of stop bits indicating the end of a packet.
 ) (

@@ -10,7 +10,7 @@ module tb_StateMachine;
   localparam  EVAL_TIME = 8;
   localparam  CHALLENGE_BITS = 4;
 
-  localparam RESET_CYCLES = 100;
+  localparam RESET_CYCLES = 20;
 
   // Ports
   reg clk = 0;

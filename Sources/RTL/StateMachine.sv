@@ -62,18 +62,18 @@ module StateMachine #(
 );
 
 
-    reg en_del_cnt = 0; //enable increment of delay counter
-    reg reset_del_cnt = 0; //reset value of delay counter
-    reg [EVAL_TIME_BITS-1:0] del_cnt = '0; //delay conter : used to wait for evaluation time
+    reg en_del_cnt; //enable increment of delay counter
+    reg reset_del_cnt; //reset value of delay counter
+    reg [EVAL_TIME_BITS-1:0] del_cnt; //delay conter : used to wait for evaluation time
 
-    reg inc_TERO_cnt = 0; //enable increment of TERO counter 
-    reg reset_TERO_cnt = 0; //reset value of TERO counter
+    reg inc_TERO_cnt; //enable increment of TERO counter 
+    reg reset_TERO_cnt; //reset value of TERO counter
     reg TERO_cnt_done; //asserted when the last tero loop number was given
     reg [$clog2(NUM_LOOPS-1):0] TERO_cnt; //TERO counter: used to select TEROS to evaluate
 
-    reg en_rep_cnt = 0; //enable increment of repetitions counter
-    reg reset_rep_cnt = 0; //reset value of repetition counter
-    reg [REPETITIONS_BITS-1:0] rep_cnt = '0; //repetition counter: used to count the repetition of the evaluations
+    reg en_rep_cnt; //enable increment of repetitions counter
+    reg reset_rep_cnt; //reset value of repetition counter
+    reg [REPETITIONS_BITS-1:0] rep_cnt; //repetition counter: used to count the repetition of the evaluations
 
 
     enum reg [2:0] {RESET = 3'b000,

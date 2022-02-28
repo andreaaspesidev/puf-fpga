@@ -36,12 +36,14 @@ module uart#(
     input rx_enable,                    // when asserted, enable the reception of data
     input rx_pin                        // RX board pin
 );
-    // Unused
-    wire uart_rx_break;
+    wire reset_n;
+
     // Local parameters
     localparam BIT_RATE = 9600;
     localparam STOP_BITS = 1;
     localparam CLOCK_HZ = 50_000_000;
+
+    assign reset_n = ~areset;   // Negate reset
 
     // Serial Receive
     uart_rx #(
@@ -51,10 +53,10 @@ module uart#(
         .STOP_BITS(STOP_BITS)       // Number of stop bits indicating the end of a packet.
     ) serial_receiver (
         .clk(clk),                      // Top level system clock input.
-        .resetn(~areset),               // Asynchronous active low reset.
+        .resetn(reset_n),               // Asynchronous active low reset.
         .uart_rxd(rx_pin),              // UART Recieve pin.
         .uart_rx_en(rx_enable),         // Recieve enable
-        .uart_rx_break(uart_rx_break),  // Did we get a BREAK message?
+        .uart_rx_break(open),           // Did we get a BREAK message? (unconnected)
         .uart_rx_valid(rx_valid),       // Valid data recieved and available.
         .uart_rx_data(data_in)          // The recieved data.
     );
@@ -67,7 +69,7 @@ module uart#(
         .STOP_BITS(STOP_BITS)       // Number of stop bits indicating the end of a packet.
     ) serial_sender (
         .clk(clk),                  // Top level system clock input.
-        .resetn(~areset),           // Asynchronous active low reset.
+        .resetn(reset_n),           // Asynchronous active low reset.
         .uart_txd(tx_pin),          // UART transmit pin.
         .uart_tx_busy(tx_busy),     // Module busy sending previous item.
         .uart_tx_en(tx_enable),     // Send the data on uart_tx_data
