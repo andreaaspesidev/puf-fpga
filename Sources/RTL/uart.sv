@@ -41,7 +41,7 @@ module uart#(
     // Local parameters
     localparam BIT_RATE = 9600;
     localparam STOP_BITS = 1;
-    localparam CLOCK_HZ = 50_000_000;
+    localparam CLOCK_HZ = 100_000_000;
 
     assign reset_n = ~areset;   // Negate reset
 

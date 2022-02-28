@@ -20,11 +20,8 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module MainStateMachine#(
-    //n. of bits received from UART
-    parameter DATA_IN_BITS = 8, //at the moment it must be kept to 8 to ensure correct functioning.
-)
-(
+module MainStateMachine (
+
     input clk, //global clock
     input reset, //global reset
 
@@ -32,7 +29,6 @@ module MainStateMachine#(
     input valid_data_in, //valid signal from UART
     
     input id_requested,
-    input challenge,
     output reg store_challenge,
     output reg data_sel,
 
@@ -50,11 +46,13 @@ module MainStateMachine#(
 
 );
 
-enum reg [2:0] {    RESET              = 3'b000,
-                    SEND_ID            = 3'b001,
-                    CHALLENGE_RCV      = 3'b010,
-                    EVALUATION         = 3'b011,
-                    SEND_RESP          = 3'b100} state, next_state; //state regs
+enum reg [2:0] {     RESET = 3'b000,
+                     WAIT_ID  = 3'b001,
+                     SEND_ID  = 3'b010,
+                     CHALLENGE_RCV = 3'b011,
+                     EVALUATION = 3'b100,
+                     SEND_RESP = 3'b101,
+                     SEND_LAST_RESP= 3'b110} state, next_state; //state regs
 
 
 always @ (posedge(clk)) // FSM state handle 
@@ -106,7 +104,7 @@ begin
             if (tx_busy == 0) begin // Wait for available tx channel
                 data_sel = 1'b0;    //place ID response into UART TX buffer
                 tx_enable = 1'b1;   //enable UART to send ID
-                next_state = WAIT_ID_SENT; //ready to receive challenge
+                next_state = CHALLENGE_RCV; //ready to receive challenge
             end
         end
 
@@ -124,22 +122,32 @@ begin
 
             if(PUF_done == 1'b1) begin  // PUF Evaluation FSM Completed
                 // Here FIFO is full with responses
-                FIFO_re = 1'b1; //expose first word from FIFO (in next clk cycle)
-                tx_enable = 1'b1;
+                //FIFO_re = 1'b1; //expose first word from FIFO (in next clk cycle)
                 next_state = SEND_RESP;
             end
         end
 
         SEND_RESP: begin
-            tx_enable = 1'b1;   // Save and trasmit the FIFO word
+            //tx_enable = 1'b1;   // Save and trasmit the FIFO word
             
             if (tx_busy == 1'b0) begin
                 if (empty_FIFO == 1'b0) begin //if the tx is idle and the response on the FIFO is not the last one
                     FIFO_re = 1'b1; //expose next data on the FIFO output
-                else //else if tx is still idle but it's last data to send
+                    tx_enable = 1'b1;   // Save and trasmit the FIFO word
+                end 
+                
+                else begin//else if tx is still idle but it's last data to send
                     //PUF_reset = 1'b1; it should not be necessary, since the PUF fsm auto resets after every cycle
-                    next_state = WAIT_ID;
+                    tx_enable = 1'b1; // raise tx_enable to send last response
+                    next_state = SEND_LAST_RESP;
                 end
+            end
+        end
+
+        SEND_LAST_RESP: begin
+
+            if (tx_busy == 1'b0) begin
+                next_state = WAIT_ID;
             end
         end
 
