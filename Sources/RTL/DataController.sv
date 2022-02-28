@@ -37,12 +37,12 @@ module DataController#(
     output id_requested,
 
     input store_challenge,
-    output [UART_BITS-1:0] challenge
+    output reg [UART_BITS-1:0] challenge
 );
     always@(posedge(clk)) //this block implements a flip flop for storing the current input challenge
     begin : challenge_reg_handle
         if (reset == 0'b1) //sync.reset
-            challenge <= 1'b0;
+            challenge <= '0;
         else if (store_challenge == 1'b1)
             challenge <= rx_data_in;
     end : challenge_reg_handle
