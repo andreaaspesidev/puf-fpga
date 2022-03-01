@@ -19,22 +19,23 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-// Ripple counter with async reset
+//! This module implements UART communication. UART_tx and UART_rx modules taken from https://github.com/ben-marshall/uart
+
 module uart#(
-    parameter DATA_BITS = 8        // number of data bits
+    parameter DATA_BITS = 8        //!number of data bits
 ) (
-    input clk,                     // clock signal
-    input areset,                  // reset signal (async)
+    input clk,                     //!clock signal
+    input areset,                  //!reset signal (async)
     // ------- TX signals --------
-    input [DATA_BITS-1 : 0] data_out,   // outgoing data
-    input tx_enable,                    // when asserted, enable sending the outgoing data
-    output tx_busy,                     // when sending, is asserted
-    output tx_pin,                      // TX board pin
+    input [DATA_BITS-1 : 0] data_out,   //! outgoing data
+    input tx_enable,                    //! when asserted, enable sending the outgoing data
+    output tx_busy,                     //! when sending, is asserted
+    output tx_pin,                      //! TX board pin
     // ------- RX signals --------
-    output [DATA_BITS-1 : 0] data_in,   // incoming data
-    output rx_valid,                    // when asserted, incoming data is valid
-    input rx_enable,                    // when asserted, enable the reception of data
-    input rx_pin                        // RX board pin
+    output [DATA_BITS-1 : 0] data_in,   //! incoming data
+    output rx_valid,                    //! when asserted, incoming data is valid
+    input rx_enable,                    //! when asserted, enable the reception of data
+    input rx_pin                        //! RX board pin
 );
     wire reset_n;
 

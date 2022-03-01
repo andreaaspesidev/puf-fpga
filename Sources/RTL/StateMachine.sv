@@ -39,26 +39,29 @@
   * - REPETITIONS and EVAL_TIME can be arbitrary, but power of 2 are recommended (leave as default if not needed explicitely)
   * - EVAL_TIME +1 cycles are actually executed due to a delay of one clock cycle in the TERO loops (buffers)
   */
+
+  //! This block implements the FSM for the evaluation of the TERO loops.
+
 module StateMachine #(
-    parameter NUM_LOOPS = 4, //number of TERO loops to generate
-    parameter REPETITIONS_BITS = 13, //bits to store number of times a TERO loop must be evaluated to compute average
-    parameter REPETITIONS = (2**(REPETITIONS_BITS-1)), // Number of repetitions, must be less than 2^REPETITIONS_BITS - 1
-    parameter EVAL_TIME_BITS = 16, //number of bits to store clk cycles to evaluate a tero loop
-    parameter EVAL_TIME = (2**(EVAL_TIME_BITS-1)), // Number of clock cycles of evaluation, must be less than 2^EVAL_TIME_BITS - 1
-    parameter CHALLENGE_BITS = 4 //bits for the input challenge
+    parameter NUM_LOOPS = 4, //!number of TERO loops to generate
+    parameter REPETITIONS_BITS = 13, //!bits to store number of times a TERO loop must be evaluated to compute average
+    parameter REPETITIONS = (2**(REPETITIONS_BITS-1)), //!number of repetitions, must be less than 2^REPETITIONS_BITS - 1
+    parameter EVAL_TIME_BITS = 16, //!number of bits to store clk cycles to evaluate a tero loop
+    parameter EVAL_TIME = (2**(EVAL_TIME_BITS-1)), //!number of clock cycles of evaluation, must be less than 2^EVAL_TIME_BITS - 1
+    parameter CHALLENGE_BITS = 4 //!bits for the input challenge
 ) 
 (
-    input clk,
-    input reset,
+    input clk,   //! global clock
+    input reset, //! reset from main FSM
 
-    input start, // Start the evaluation of all the tero loops, based on the value of the challenge
-    input [CHALLENGE_BITS-1:0] challenge, // Challenge number used to select the way tero loops are selected​
+    input start, //! Start the evaluation of all the tero loops, based on the value of the challenge 
+    input [CHALLENGE_BITS-1:0] challenge, //!challenge number used to select the way tero loops are selected​
 
-    output reg done, // Asserted when the whole computation is finished (all the tero loops that had to be evaluated were evaluated)
-    output reg reset_puf, // Signal used to reset all tero instances
-    output [$clog2(NUM_LOOPS-1):0] select_puf, // Signal containing the number of the loop to evaluate
-    output reg enable_puf, // Signals used to start the selected loop evaluation
-    output reg store_response_puf // When asserted, the response of the puf must be saved (in the AVG module)​,
+    output reg done, //!asserted when the whole computation is finished (all the tero loops that had to be evaluated were evaluated)
+    output reg reset_puf, //!signal used to reset all tero instances
+    output [$clog2(NUM_LOOPS-1):0] select_puf, //!signal containing the number of the loop to evaluate
+    output reg enable_puf, //!signals used to start the selected loop evaluation
+    output reg store_response_puf //!when asserted, the response of the puf must be saved (in the AVG module)​,
 );
 
 

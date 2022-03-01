@@ -19,22 +19,23 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+//! This module computes, given the challenge, the next TERO to evaluate
 
 module dummy_freq_cnt #(
-    parameter NUM_LOOPS = 32,
-    parameter CHALLENGE_BITS = 4) (
+    parameter NUM_LOOPS = 32, //! number of total TERO loops
+    parameter CHALLENGE_BITS = 8) ( //!number of bits to represent challenge
 
     //input [N_TERO_BITS-1:0] curr_TERO, // number of current TERO selected
     input clk,
-    input [CHALLENGE_BITS-1:0] challenge_in,
+    input [CHALLENGE_BITS-1:0] challenge_in, //! input challenge
 
-    input increment,
-    input reset,
+    input increment, //! when this signal is asserted, the next TERO number is exposed (syncronous with clk)
+    input reset, //! when this signal is asserted, the first TERO is exposed again
     
-    output reg [$clog2(NUM_LOOPS-1):0] next_TERO, // number of next TERO to select
-    output done // Asserted when the last tero is supplied
+    output reg [$clog2(NUM_LOOPS-1):0] next_TERO, //! number of next TERO to evaluate
+    output done //! Asserted when the last tero is supplied (combinatorial)
 );
-    localparam last_TERO = NUM_LOOPS - 1;
+    localparam last_TERO = NUM_LOOPS - 1; // local parameter to define last TERO to be evaluated
     
     assign done = (next_TERO == last_TERO); //done output is combinatorial and asserted when the last TERO is supplied
 

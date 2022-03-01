@@ -19,14 +19,16 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+//! This module implements 2 TERO loops that will be placed inside a single Slice.
+
 module TERO_instance(
-        input clk,      // System clock
+        input clk,      //! System clock
 
-        input enable_1, // If asseted, starts the oscillation of the first TERO loop
-        input enable_2, // If asseted, starts the oscillation of the second TERO loop
+        input enable_1, //! If asseted, starts the oscillation of the first TERO loop
+        input enable_2, //! If asseted, starts the oscillation of the second TERO loop
 
-        output dout_1,  // Oscillating output of the first TERO loop
-        output dout_2   // Oscillating output of the second TERO loop
+        output dout_1,  //! Oscillating output of the first TERO loop
+        output dout_2   //! Oscillating output of the second TERO loop
     );
 
     wire loop1_enable1; // 1 of 2 enable signals of for the first loop

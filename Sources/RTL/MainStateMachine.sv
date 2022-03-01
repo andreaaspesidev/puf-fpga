@@ -19,30 +19,35 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+//! This module implements the main Finite State Machine, which handles the control signals for:
+//! * The PUF module
+//! * The Data Controller
+//! * The UART blocks
+//! * The responses' FIFO
 
 module MainStateMachine (
 
-    input clk, //global clock
-    input reset, //global reset
+    input clk, //!global clock
+    input reset, //!global reset
 
-    input tx_busy, //busy signal from UART, asserted when UART_tx is transmitting data
-    input valid_data_in, //valid signal from UART
+    input tx_busy, //!busy signal from UART, asserted when UART_tx is transmitting data
+    input valid_data_in, //!valid signal from UART
     
-    input id_requested,
-    output reg store_challenge,
-    output reg data_sel,
+    input id_requested, //!signal asserted when the received id is correct
+    output reg store_challenge, //!control signal to store challenge read from UART into a register
+    output reg data_sel, //!sel input of multiplexer to choose whether to send ID or responses to UART tx (0=ID, 1=responses)
 
-    output reg PUF_enable, //signal to enable PUF FSM
-    output reg PUF_reset, // signal to reset PUF_FSM
-    input PUF_done, //done signal from puf
+    output reg PUF_enable, //!signal to enable PUF FSM
+    output reg PUF_reset, //! signal to reset PUF_FSM
+    input PUF_done, //!done signal from puf
 
-    output reg tx_enable,  //signal to start UART_tx transmission
-    output reg rx_enable,  //signal to enable reception of data from UART_rx
-    output reg UART_reset, //signal to reset UART
+    output reg tx_enable,  //!signal to start UART_tx transmission
+    output reg rx_enable,  //!signal to enable reception of data from UART_rx
+    output reg UART_reset, //!signal to reset UART
    
     input empty_FIFO,
-    output reg FIFO_re, //read enable of response FIFO
-    output reg FIFO_reset //signal to reset response FIFO
+    output reg FIFO_re, //!read enable of response FIFO
+    output reg FIFO_reset //!signal to reset response FIFO
 
 );
 

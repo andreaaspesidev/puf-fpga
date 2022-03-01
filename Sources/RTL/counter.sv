@@ -19,16 +19,16 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-// Ripple counter with async reset
+//! Ripple counter with async reset
 module counter#(
     parameter NUM_BITS = 32
 ) (
-    input arst,                     // Asynchronous reset of the counter
+    input arst,                     //! Asynchronous reset of the counter
 
-    input signal_in,                // Oscillating signal to be counted (counts the rising endge)
-    input enable,                   // When asserted, counting is enabled
+    input signal_in,                //! Oscillating signal to be counted (counts the rising edge)
+    input enable,                   //! When asserted, counting is enabled
 
-    output [NUM_BITS-1 : 0] count   // Output of the counter (binary encoding)
+    output [NUM_BITS-1 : 0] count   //! Output of the counter (binary encoding)
 );
 
     wire [NUM_BITS-1 : 0] q;

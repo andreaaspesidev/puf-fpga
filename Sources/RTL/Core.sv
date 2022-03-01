@@ -21,24 +21,24 @@
 
 
 module Core #(
-parameter NUM_LOOPS = 8, //number of TERO loops to generate
-parameter TOT_CNT_BITS = 32, //Total number of bits of the response (counter bits considering first and second stage merged)
-parameter FIRST_CNT_BITS = 2 //Number of bits of the first stage counters​
+parameter NUM_LOOPS = 8, //!number of TERO loops to generate
+parameter TOT_CNT_BITS = 32, //!Total number of bits of the response (counter bits considering first and second stage merged)
+parameter FIRST_CNT_BITS = 2 //!Number of bits of the first stage counters​
 )
     
 (
     input clk,
-    input reset,
+    input reset, //!asserted by FSM
 
-    input enable, //when 1 the selected loop oscillate, when 0 the oscillation stops​
-    input [$clog2(NUM_LOOPS-1):0] loop_select, // specify the number of the tero loop to activate and count​
+    input enable, //!when 1 the selected loop oscillate, when 0 the oscillation stops​
+    input [$clog2(NUM_LOOPS-1):0] loop_select, //!specify the number of the tero loop to activate and count​
 
-    output [TOT_CNT_BITS-1:0] response //response of the selected loop
+    output [TOT_CNT_BITS-1:0] response //!response of the selected loop
     );
 
-    wire enable_reg; // output of enable  buffer
+    wire enable_reg; //! output of enable  buffer
 
-    reg [NUM_LOOPS-1:0] mask;
+    reg [NUM_LOOPS-1:0] mask ;
     //reg [NUM_LOOPS-1:0] mask = {NUM_LOOPS-1 {1'b0}}; //should be the same of previous one
 
     wire [NUM_LOOPS-1:0] TEROS_out;  // signal to store the outputs of each TERO loop
