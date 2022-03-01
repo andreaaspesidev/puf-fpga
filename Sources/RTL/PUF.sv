@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-//! This block insatantiates the PUF cores (Core.sv) and the PUF FSM (StateMachine.sv).
+//! This block instantiates the PUF cores (Core.sv) and the PUF FSM (StateMachine.sv).
 
 module PUF #(
     parameter NUM_LOOPS = 1280, //! number of TERO loops
