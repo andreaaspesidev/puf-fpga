@@ -41,8 +41,8 @@ parameter FIRST_CNT_BITS = 2 //!Number of bits of the first stage counters​
     reg [NUM_LOOPS-1:0] mask ;
     //reg [NUM_LOOPS-1:0] mask = {NUM_LOOPS-1 {1'b0}}; //should be the same of previous one
 
-    wire [NUM_LOOPS-1:0] TEROS_out;  // signal to store the outputs of each TERO loop
-    wire [NUM_LOOPS/4-1:0] ored_out; // signal to store the output of the OR LUTS
+    (* dont_touch = "true" *) wire [NUM_LOOPS-1:0] TEROS_out;  // signal to store the outputs of each TERO loop
+    (* dont_touch = "true" *) wire [NUM_LOOPS/4-1:0] ored_out; // signal to store the output of the OR LUTS
     wire [FIRST_CNT_BITS * NUM_LOOPS /4 -1 : 0] first_cnt_res;  // signal to store the outputs of the first stage counters
     wire [TOT_CNT_BITS-FIRST_CNT_BITS-1:0] second_cnt_res;      // signal to store the outputs of the second stage counter
     wire [$left(loop_select):$right(loop_select)] loop_sel_shift; // signal to select the desired group of 4 TEROS

@@ -31,20 +31,20 @@ module TERO_instance(
         output dout_2   //! Oscillating output of the second TERO loop
     );
 
-    wire loop1_enable1; // 1 of 2 enable signals of for the first loop
-    wire loop1_enable2; // 2 of 2 enable signals of for the first loop
-    wire loop1_inv1;    // Output of the interter 1 for the first loop
-    wire loop1_inv2;    // Output of the interter 2 for the first loop
-    wire loop1_and1;    // Output of the and 1 for the first loop
-    wire loop1_and2;    // Output of the and 2 for the first loop
+    (* dont_touch = "true" *) wire loop1_enable1; // 1 of 2 enable signals of for the first loop
+    (* dont_touch = "true" *) wire loop1_enable2; // 2 of 2 enable signals of for the first loop
+    (* dont_touch = "true" *) wire loop1_inv1;    // Output of the interter 1 for the first loop
+    (* dont_touch = "true" *) wire loop1_inv2;    // Output of the interter 2 for the first loop
+    (* dont_touch = "true" *) wire loop1_and1;    // Output of the and 1 for the first loop
+    (* dont_touch = "true" *) wire loop1_and2;    // Output of the and 2 for the first loop
 
 
-    wire loop2_enable1; // 1 of 2 enable signals of for the second loop
-    wire loop2_enable2; // 2 of 2 enable signals of for the second loop
-    wire loop2_inv1;    // Output of the interter 1 for the second loop
-    wire loop2_inv2;    // Output of the interter 2 for the second loop
-    wire loop2_and1;    // Output of the and 1 for the second loop
-    wire loop2_and2;    // Output of the and 2 for the second loop
+    (* dont_touch = "true" *) wire loop2_enable1; // 1 of 2 enable signals of for the second loop
+    (* dont_touch = "true" *) wire loop2_enable2; // 2 of 2 enable signals of for the second loop
+    (* dont_touch = "true" *) wire loop2_inv1;    // Output of the interter 1 for the second loop
+    (* dont_touch = "true" *) wire loop2_inv2;    // Output of the interter 2 for the second loop
+    (* dont_touch = "true" *) wire loop2_and1;    // Output of the and 1 for the second loop
+    (* dont_touch = "true" *) wire loop2_and2;    // Output of the and 2 for the second loop
 
 
     // ---------------------------
