@@ -30,7 +30,7 @@ module framework#(
     //parameter REPETITIONS = (2**(REPETITIONS_BITS-1)),
     parameter EVAL_TIME_BITS = 16,
     //parameter EVAL_TIME = (2**(EVAL_TIME_BITS-1)),
-    parameter CHALLENGE_BITS = 4,
+    parameter CHALLENGE_BITS = 8,
 
     //UART parameters
     parameter DATA_BITS = 8,
