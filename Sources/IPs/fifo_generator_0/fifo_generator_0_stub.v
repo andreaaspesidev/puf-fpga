@@ -1,8 +1,8 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2020.2 (lin64) Build 3064766 Wed Nov 18 09:12:47 MST 2020
-// Date        : Sun Feb 27 23:45:20 2022
-// Host        : pop-os running 64-bit Pop!_OS 21.10
+// Date        : Sun Feb 27 17:50:19 2022
+// Host        : putoale-MS-7B86 running 64-bit Ubuntu 21.10
 // Command     : write_verilog -force -mode synth_stub -rename_top fifo_generator_0 -prefix
 //               fifo_generator_0_ fifo_generator_0_stub.v
 // Design      : fifo_generator_0
