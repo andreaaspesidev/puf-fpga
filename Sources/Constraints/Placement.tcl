@@ -106,7 +106,7 @@ for { set INSTANCE_NUM  0} {$INSTANCE_NUM < $NUM_INSTANCES} {incr INSTANCE_NUM} 
         # place on the left
         # --- OR
         place_cell PUF_inst/Core_inst/gen_OR[[expr {$INSTANCE_NUM / 2}]].LUT4_inst SLICE_X$OR_COLUMN_LEFT\Y$Y/A6LUT
-        set_property LOCK_PINS {I0:A5 I1:A3 I2:A4 I3:A6} [get_cells PUF_inst/Core_inst/gen_OR[[expr {$INSTANCE_NUM / 2}]].LUT4_inst]
+        set_property LOCK_PINS {I0:A6 I1:A2 I2:A3 I3:A4} [get_cells PUF_inst/Core_inst/gen_OR[[expr {$INSTANCE_NUM / 2}]].LUT4_inst]
         # --- first FF of counter
         place_cell PUF_inst/Core_inst/gen_cnt_fst_stage[[expr {$INSTANCE_NUM / 2}]].cnt/gen_ripple_block[0].FDCE_inst SLICE_X$OR_COLUMN_LEFT\Y$Y/AFF
     }
