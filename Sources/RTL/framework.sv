@@ -44,9 +44,9 @@ module framework#(
     input reset,
 
     input rx_pin,
-    output tx_pin,
+    output tx_pin
 
-    output done_LED
+    //output done_LED
 
 );
 
@@ -94,7 +94,7 @@ module framework#(
         .clk_out1(clk),
         .reset(reset),
         .clk_in1(clk_pin)
- );
+    );
 
     MainStateMachine MainStateMachine_inst (
       .clk (clk ),
