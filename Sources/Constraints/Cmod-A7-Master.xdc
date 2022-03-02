@@ -131,3 +131,7 @@ set_property -dict { PACKAGE_PIN J17   IOSTANDARD LVCMOS33 } [get_ports { rx_pin
 #set_property -dict { PACKAGE_PIN R19   IOSTANDARD LVCMOS33 } [get_ports { RamWEn     }]; #IO_L10N_T1_D15_14 Sch=sram-we
 #set_property -dict { PACKAGE_PIN N19   IOSTANDARD LVCMOS33 } [get_ports { RamCEn     }]; #IO_L9N_T1_DQS_D13_14 Sch=sram-ce
 
+set_property CFGBVS VCCO [current_design];
+set_property CONFIG_VOLTAGE 3.3 [current_design];
+
+set_property ALLOW_COMBINATORIAL_LOOPS TRUE [get_nets PUF_inst/Core_inst/gen_TEROS[*].TEROS/loop*_block*/O*];

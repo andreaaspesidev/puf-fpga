@@ -199,3 +199,5 @@ for { set INSTANCE_NUM  0} {$INSTANCE_NUM < $NUM_INSTANCES} {incr INSTANCE_NUM} 
         set_property FIXED_ROUTE { { CLBLL_L_DQ CLBLL_LOGIC_OUTS3 IMUX_L39 CLBLL_L_D3 }  } [get_nets PUF_inst/Core_inst/gen_TEROS[$INSTANCE_NUM].TEROS/loop2_enable2] 
     }
 }
+
+set_property SEVERITY {Warning} [get_drc_checks LUTLP-1]
