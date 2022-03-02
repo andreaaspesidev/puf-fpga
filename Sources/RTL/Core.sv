@@ -39,7 +39,7 @@ parameter FIRST_CNT_BITS = 2 //!Number of bits of the first stage counters​
     wire enable_reg; //! output of enable  buffer
 
     reg [NUM_LOOPS-1:0] mask ;
-    reg [NUM_LOOPS-1:0] mask_reg; //STILL UNDER TEST
+    //reg [NUM_LOOPS-1:0] mask_reg; //STILL UNDER TEST
     //reg [NUM_LOOPS-1:0] mask = {NUM_LOOPS-1 {1'b0}}; //should be the same of previous one
 
     (* dont_touch = "true" *) wire [NUM_LOOPS-1:0] TEROS_out;  // signal to store the outputs of each TERO loop
@@ -62,13 +62,13 @@ parameter FIRST_CNT_BITS = 2 //!Number of bits of the first stage counters​
     );
 
     //STILL UNDER TEST
-    always@(posedge(clk))
+    /* always@(posedge(clk))
     begin
         if (reset == 1'b1)
             mask_reg <= 1'b0;
         else
             mask_reg <= mask;
-    end
+    end */
 
     always @(*) //! this always block decodes the select_core signal, giving a one-hot encoded signal to enable one loop at a time
 
@@ -85,10 +85,10 @@ parameter FIRST_CNT_BITS = 2 //!Number of bits of the first stage counters​
 
         TERO_instance TEROS (
                     .clk(clk),
-                    //.enable_1(mask[2 * currInst]),
-                    .enable_1(mask_reg[2 * currInst]),
-                    //.enable_2(mask[1 + 2 * currInst]),
-                    .enable_2(mask_reg[1 + 2 * currInst]),
+                    .enable_1(mask[2 * currInst]),
+                    //.enable_1(mask_reg[2 * currInst]),
+                    .enable_2(mask[1 + 2 * currInst]),
+                    //.enable_2(mask_reg[1 + 2 * currInst]),
                     .dout_1(TEROS_out[2 * currInst]),
                     .dout_2(TEROS_out[1 + 2 * currInst])
         );
