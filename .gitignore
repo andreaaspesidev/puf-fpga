@@ -2,5 +2,7 @@
 !*/
 !Sources/**
 !Analysis/**
+!Report/report.tex
+!Report/report.pdf
 !*.xpr
 !.gitignore
