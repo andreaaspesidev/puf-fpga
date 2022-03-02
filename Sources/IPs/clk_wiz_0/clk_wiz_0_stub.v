@@ -1,10 +1,10 @@
 // Copyright 1986-2020 Xilinx, Inc. All Rights Reserved.
 // --------------------------------------------------------------------------------
 // Tool Version: Vivado v.2020.2 (lin64) Build 3064766 Wed Nov 18 09:12:47 MST 2020
-// Date        : Tue Mar  1 00:28:41 2022
-// Host        : pop-os running 64-bit Pop!_OS 21.10
-// Command     : write_verilog -force -mode synth_stub -rename_top clk_wiz_0 -prefix
-//               clk_wiz_0_ clk_wiz_0_stub.v
+// Date        : Wed Mar  2 10:39:12 2022
+// Host        : putoale-MS-7B86 running 64-bit Ubuntu 21.10
+// Command     : write_verilog -force -mode synth_stub
+//               /home/putoale/Documenti/PUF_proj/puf-fpga/Sources/IPs/clk_wiz_0/clk_wiz_0_stub.v
 // Design      : clk_wiz_0
 // Purpose     : Stub declaration of top-level module interface
 // Device      : xc7a35tcpg236-1
