@@ -24,11 +24,11 @@ module framework#(
     //PUF parameters
     parameter NUM_LOOPS = 1280,
     parameter RESPONSE_BITS = 32,
-    parameter REPETITIONS_BITS = 13, //rep will be 2^12
+    parameter REPETITIONS_BITS = 6, //rep will be 2^12
     parameter TOT_CNT_BITS = RESPONSE_BITS + REPETITIONS_BITS -1,
     parameter FIRST_CNT_BITS = 2,
     //parameter REPETITIONS = (2**(REPETITIONS_BITS-1)),
-    parameter EVAL_TIME_BITS = 16,
+    parameter EVAL_TIME_BITS = 20,
     //parameter EVAL_TIME = (2**(EVAL_TIME_BITS-1)),
     parameter CHALLENGE_BITS = 8,
 
@@ -37,10 +37,10 @@ module framework#(
 
     //data controller parameters
     parameter REQUEST_ID = 8'b10101010,
-    parameter RESPONSE_ID = 8'b10101010
+    parameter RESPONSE_ID = 8'b10101011
 )
 (
-    input clk_pin,
+    input clk,
     input reset,
 
     input rx_pin,
@@ -54,7 +54,7 @@ module framework#(
 
     //puf signals
 
-    wire clk;
+    //wire clk;
 
     wire PUF_start;
     wire PUF_reset;
@@ -89,12 +89,12 @@ module framework#(
     wire [RESPONSE_BITS-1:0] FIFO_in;
     wire FIFO_re;
 
-
-    clk_wiz_0 clk_wizard_inst (
+    
+    /*clk_wiz_0 clk_wizard_inst (
         .clk_out1(clk),
         .reset(reset),
         .clk_in1(clk_pin)
-    );
+    );*/
 
     MainStateMachine MainStateMachine_inst (
       .clk (clk ),
