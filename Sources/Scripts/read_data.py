@@ -62,6 +62,17 @@ def bit_array_to_string(arr):
         response_char = response_char + ('1' if arr[i] else '0')
     return response_char 
 
+
+def write_csv (freqs, board_n, eval_bits, rep_bits):
+    """This function takes as input an array of PUF frequencies and exports them to a csv file"""
+
+    with open(f'frequencies_{board_n}_{eval_bits}_{rep_bits}_try.csv', 'w') as f:
+        csv_fields = ["NUM_LOOP", "FREQ","EVAL_BITS","REP_BITS","BOARD_NUM"]
+        writer = csv.writer(f)
+        writer.writerow(csv_fields)
+        csv_rows = [[currFreq,freqs[currFreq],eval_bits,rep_bits,board_n] for currFreq in range(len(freqs))]
+        writer.writerows(csv_rows)
+
 # -------------
 #   Code 
 # -------------
@@ -81,6 +92,11 @@ NUM_LOOPS = 1280
 AUTH_ID = i2b(0b10101010)
 AUTH_RESPONSE = i2b(0b10101011)
 CHALLENGE = i2b(0b00000000)
+
+#
+BOARD_NUM = 0
+EVAL_BITS = 6
+REPETITION_BITS = 2
 
 # Send Auth request
 print("-----------------------------")
@@ -114,12 +130,14 @@ if response == AUTH_RESPONSE:
     print("-------- STATISTICS ---------")
     print("-----------------------------")
     # Save frequencies to a file
-    with open('frequencies.csv', 'w') as f:
+    """ with open('frequencies.csv', 'w') as f:
         # create the csv writer
         writer = csv.writer(f)
         for freq in frequencies:
             # write a row to the csv file
-            writer.writerow([freq])
+            writer.writerow([freq]) """
+    write_csv(frequencies,BOARD_NUM,EVAL_BITS,REPETITION_BITS)
+
     # Compute statistics
     max = np.max(frequencies)
     max_bits = np.math.ceil(np.math.log2(max))
