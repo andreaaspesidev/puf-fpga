@@ -80,7 +80,7 @@ module tb_MainStateMachine;
         @(posedge(clk));
         PUF_done <= 1'b0;
 
-        repeat(3) @(negedge(FIFO_re));
+        repeat(4) @(negedge(FIFO_re));
         empty_FIFO <= 1'b1;
 
         repeat(50)@(posedge(clk));
