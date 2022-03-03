@@ -135,7 +135,7 @@ begin
         SEND_RESP: begin
             //tx_enable = 1'b1;   // Save and trasmit the FIFO word
             
-            if (tx_busy == 1'b0) begin
+            /* if (tx_busy == 1'b0) begin
                 if (empty_FIFO == 1'b0) begin //if the tx is idle and the response on the FIFO is not the last one
                     FIFO_re = 1'b1; //expose next data on the FIFO output
                     tx_enable = 1'b1;   // Save and trasmit the FIFO word
@@ -146,6 +146,14 @@ begin
                     tx_enable = 1'b1; // raise tx_enable to send last response
                     next_state = SEND_LAST_RESP;
                 end
+            end */
+
+            if (empty_FIFO == 1'b0 && tx_busy == 1'b0) begin
+                    FIFO_re = 1'b1; //expose next data on the FIFO output
+                    tx_enable = 1'b1;   // Save and trasmit the FIFO word
+            end
+            else if (empty_FIFO == 1'b1) begin
+                next_state = SEND_LAST_RESP;
             end
         end
 
