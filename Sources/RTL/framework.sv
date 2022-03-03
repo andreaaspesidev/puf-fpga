@@ -24,11 +24,11 @@ module framework#(
     //PUF parameters
     parameter NUM_LOOPS = 1280,
     parameter RESPONSE_BITS = 32,
-    parameter REPETITIONS_BITS = 6, //rep will be 2^12
+    parameter REPETITIONS_BITS = 2,
     parameter TOT_CNT_BITS = RESPONSE_BITS + REPETITIONS_BITS -1,
     parameter FIRST_CNT_BITS = 2,
     //parameter REPETITIONS = (2**(REPETITIONS_BITS-1)),
-    parameter EVAL_TIME_BITS = 20,
+    parameter EVAL_TIME_BITS = 6,
     //parameter EVAL_TIME = (2**(EVAL_TIME_BITS-1)),
     parameter CHALLENGE_BITS = 8,
 
