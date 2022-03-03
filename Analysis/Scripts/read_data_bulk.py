@@ -5,10 +5,15 @@ import csv
 import os
 from pathlib import Path
 
+# Usage
+# 1. Adjust EXPERIMENT_SUFFIX
+# 2. From the root folder of the project, launch: python3 Analysis/Scripts/read_data_bulk.py
+# 3. Move frequencies and responses to their folder manually
+
 # General configuration
 READ_NUMBER = 100
-EXPERIMENT_SUFFIX = "_EVAL6_REP23"
-OUT_DIR = "Analysis/Data"
+EXPERIMENT_SUFFIX = "_EVAL6_REP13"
+OUT_DIR = "Analysis/Data/TERO_AP"
 
 def i2b (i):
     return i.to_bytes(length = 1, byteorder="little",signed=False)

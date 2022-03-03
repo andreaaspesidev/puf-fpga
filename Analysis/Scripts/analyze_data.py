@@ -4,6 +4,9 @@ import numpy as np
 from pathlib import Path
 import re
 
+# Usage
+# 1. From the root folder of the project, launch: python3 Analysis/Scripts/read_data_bulk.py
+
 def natural_sort(l): 
     convert = lambda text: int(text) if text.isdigit() else text.lower()
     alphanum_key = lambda key: [convert(c) for c in re.split('([0-9]+)', key)]
@@ -71,8 +74,8 @@ def compute_reliability(data, name, output_file):
     save_csv(reliabilities, output_file)
 
 # Read data
-RESPONSE_PATH = Path("Analysis/Data/responses")
-OUTPUT_FILE = Path("Analysis/reliabilities.csv")
+RESPONSE_PATH = Path("Analysis/Data/TERO_AP/responses")
+OUTPUT_FILE = Path("Analysis/reliabilities_TERO_AP.csv")
 for csv_name in natural_sort(os.listdir(RESPONSE_PATH)):
     experiment_name = re.search(r'responses_([\w_]+)\.csv', csv_name)[1]
     data = read_csv(str(RESPONSE_PATH / csv_name))
