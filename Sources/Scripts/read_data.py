@@ -66,7 +66,7 @@ def bit_array_to_string(arr):
 def write_csv (freqs, board_n, eval_bits, rep_bits):
     """This function takes as input an array of PUF frequencies and exports them to a csv file"""
 
-    with open(f'frequencies_{board_n}_{eval_bits}_{rep_bits}_try.csv', 'w') as f:
+    with open(f'frequencies_{board_n}_{eval_bits}_{rep_bits}.csv', 'w') as f:
         csv_fields = ["NUM_LOOP", "FREQ","EVAL_BITS","REP_BITS","BOARD_NUM"]
         writer = csv.writer(f)
         writer.writerow(csv_fields)
@@ -87,16 +87,17 @@ serial_port = serial.Serial(port='/dev/ttyUSB1',
                             parity=serial.PARITY_NONE, 
                             stopbits=serial.STOPBITS_ONE,
                             timeout=10*60)
-# Params
+# fixed Params
 NUM_LOOPS = 1280
 AUTH_ID = i2b(0b10101010)
 AUTH_RESPONSE = i2b(0b10101011)
 CHALLENGE = i2b(0b00000000)
 
-#
+#variable params
 BOARD_NUM = 0
-EVAL_BITS = 6
-REPETITION_BITS = 2
+EVAL_BITS = 20
+REPETITION_BITS = 6
+
 
 # Send Auth request
 print("-----------------------------")
@@ -130,12 +131,6 @@ if response == AUTH_RESPONSE:
     print("-------- STATISTICS ---------")
     print("-----------------------------")
     # Save frequencies to a file
-    """ with open('frequencies.csv', 'w') as f:
-        # create the csv writer
-        writer = csv.writer(f)
-        for freq in frequencies:
-            # write a row to the csv file
-            writer.writerow([freq]) """
     write_csv(frequencies,BOARD_NUM,EVAL_BITS,REPETITION_BITS)
 
     # Compute statistics
@@ -160,4 +155,3 @@ if response == AUTH_RESPONSE:
         print(f"Unique ID: {unique_id_str}")
 else:
     print("Auth failed!")
-
