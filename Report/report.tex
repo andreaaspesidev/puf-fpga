@@ -91,42 +91,20 @@
 
 % Insert here the info that will be displayed into your Title page 
 % -> title of your work
-\renewcommand{\title}{Title}
-% -> author name and surname
-\renewcommand{\author}{Name Surname}
-% -> MSc course
-\newcommand{\course}{Xxxxxxxxxxxx Engineering - Ingegneria Xxxxxxxxxxxx}
-% -> advisor name and surname
-\newcommand{\advisor}{Prof. Name Surname}
-% IF AND ONLY IF you need to modify the co-supervisors you also have to modify the file Configuration_files/title_page.tex (ONLY where it is marked)
-\newcommand{\firstcoadvisor}{Name Surname} % insert if any otherwise comment
-\newcommand{\secondcoadvisor}{Name Surname} % insert if any otherwise comment
-% -> author ID
-\newcommand{\ID}{Student ID}
-% -> academic year
-\newcommand{\YEAR}{20XX-20XX}
+\renewcommand{\title}{TERO PUF Implementation on Xilinx Artix7 FPGA}
 % -> abstract (only in English)
-\renewcommand{\abstract}{Here goes the Abstract in English of your thesis (in article format)
-followed by a list of keywords.
-The Abstract is a concise summary of the content of the thesis (single page of text)
-and a guide to the most important contributions included in your thesis.
-The Abstract is the very last thing you write.
-It should be a self-contained text and should be clear
-to someone who hasn't (yet) read the whole manuscript.
-The Abstract should contain the answers to the main research questions
-that have been addressed in your thesis.
-It needs to summarize the motivations and the adopted approach as well as
-the findings of your work and their relevance and impact.
-The Abstract is the part appearing in the record of your thesis inside POLITesi,
-the Digital Archive of PhD and Master Theses (Laurea Magistrale) of Politecnico di Milano.
-The Abstract will be followed by a list of four to six keywords.
-Keywords are a tool to help indexers and search engines to find relevant documents.
-To be relevant and effective, keywords must be chosen carefully.
-They should represent the content of your work and be specific to your field or sub-field.
-Keywords may be a single word or two to four words. }
-
-% -> key-words (only in English)
-\newcommand{\keywords}{here, the keywords, of your thesis}
+\renewcommand{\abstract}{
+    Physical Unclonable Functions (PUFs) are becoming important in recent years 
+    for various purposes such as Device Identification, True Random Number Generators,
+    Cryptographic Key Generators, IP Protection.
+    Diffent ways of realizing PUFs have been proposed in literature, exploiting
+    process variations occurring inside chips. 
+    Among them, some can be efficiently implemented in FPGAs: in our project, after
+    analyzing the state of the art, we chose to implement a Transient Effect Ring Oscillator (TERO) PUF.
+    TERO PUF offers high resistance to surrounding logic influence and temperature changes,
+    providing at the same time high uniqueness and reliability.
+    As target, we chose Basys3 boards from Digilent, shipped with Xilinx Artix7 XC7-A35T.
+}
 
 %-------------------------------------------------------------------------
 %	BEGIN OF YOUR DOCUMENT
@@ -136,13 +114,73 @@ Keywords may be a single word or two to four words. }
 %-----------------------------------------------------------------------------
 % TITLE PAGE
 %-----------------------------------------------------------------------------
-% Do not change Configuration_files/TitlePage.tex (Modify it IF AND ONLY IF you need to add or delete the Co-advisors)
-% This file creates the Title Page of the document
 \input{configuration/title_page}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%     THESIS MAIN TEXT     %%
+%%    PROJECT MAIN TEXT     %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%---------------------------------
+% INTRODUCTION
+%---------------------------------
+%
+% Versione Vivado, board e chip 
+% che avete preso come target, frequenza operativa, 
+% eventuali software aggiuntivi usati.
+% Articolo di riferimento implementazione
+%
+\section{Introduction}
+\label{sec:introduction}
+\input{sections/introduction}
+
+%---------------------------------
+% DESIGN
+%---------------------------------
+%
+% Breve riassunto del nostro design finale,
+% differenze con il loro design, correzioni.
+% Funzionamento con challenge, e protocollo comunicazione.
+% Challenge disattivate motivo
+%
+\section{Design}
+\label{sec:design}
+\input{sections/design}
+
+% Sottosezioni
+% 1. Architettura: come è composto un tero loop (e come si fa partire), macchine a stati 
+% 2. Comunicazione: protocollo interazione via UART
+% 3. Challenges: discorso su challenge
+
+%---------------------------------
+% IDENTIFICATION ID GENERATION
+%---------------------------------
+%
+% Breve descrizione analisi loro script, differenti
+% modalità di generazione ID. Versione scelta da noi (2Comp)
+% Pseudo codice generazione con 2Comp
+%
+\section{ID Generation}
+\label{sec:id_generation}
+\input{sections/id_generation}
+
+%---------------------------------
+% RESULTS E CONCLUSIONS
+%---------------------------------
+%
+% Discutere di valori uniqueness e reliability
+% in linea con quelli del paper, discorso su scelta
+% evaluation time e repetition bits ed esperimenti.
+% Verificati valori del paper originale.
+%
+\section{Results and Conclusion}
+\label{sec:results}
+\input{sections/results}
+
+\newpage
+\
+\newpage
+\
+\newpage
 
 %-----------------------------------------------------------------------------
 % INTRODUCTION
@@ -259,11 +297,11 @@ can contain multiple sub-figures with their own caption and label, e.g. Figure~\
 \begin{figure}[H]
     \centering
     \subfloat[One PoliMi logo.\label{fig:polimi_logo1}]{
-        \includegraphics[scale=0.5]{Images/logo_polimi_scritta.eps}
+        \includegraphics[scale=0.5]{images/logo_polimi_scritta.eps}
     }
     \quad
     \subfloat[Another one PoliMi logo.\label{fig:polimi_logo2}]{
-        \includegraphics[scale=0.5]{Images/logo_polimi_scritta2.eps}
+        \includegraphics[scale=0.5]{images/logo_polimi_scritta2.eps}
     }
     \caption[]{Caption of the Figure.}
     \label{fig:quadtree2}
