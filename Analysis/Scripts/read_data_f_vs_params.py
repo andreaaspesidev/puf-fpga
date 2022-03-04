@@ -2,6 +2,8 @@ import binascii
 import serial
 import numpy as np
 import csv
+import os
+
 
 
 def i2b (i):
@@ -63,10 +65,10 @@ def bit_array_to_string(arr):
     return response_char 
 
 
-def write_csv (freqs, board_n, eval_bits, rep_bits):
+def write_csv (freqs, board_n, eval_bits, rep_bits,csv_dir):
     """This function takes as input an array of PUF frequencies and exports them to a csv file"""
-
-    with open(f'frequencies_{board_n}_{eval_bits}_{rep_bits}.csv', 'w') as f:
+    CSV_PATH = csv_dir + f'frequencies_{board_n}_{eval_bits}_{rep_bits}.csv'
+    with open(CSV_PATH, 'w') as f:
         csv_fields = ["NUM_LOOP", "FREQ","EVAL_BITS","REP_BITS","BOARD_NUM"]
         writer = csv.writer(f)
         writer.writerow(csv_fields)
@@ -94,9 +96,13 @@ AUTH_RESPONSE = i2b(0b10101011)
 CHALLENGE = i2b(0b00000000)
 
 #variable params
-BOARD_NUM = 0
-EVAL_BITS = 20
-REPETITION_BITS = 6
+BOARD_NUM = 2
+EVAL_BITS = 6
+REPETITION_BITS = 13
+
+#csv params
+CSV_DIR = 'Analysis/Data/Freq_vs_params/'
+
 
 
 # Send Auth request
@@ -131,7 +137,7 @@ if response == AUTH_RESPONSE:
     print("-------- STATISTICS ---------")
     print("-----------------------------")
     # Save frequencies to a file
-    write_csv(frequencies,BOARD_NUM,EVAL_BITS,REPETITION_BITS)
+    write_csv(frequencies,BOARD_NUM,EVAL_BITS,REPETITION_BITS,CSV_DIR)
 
     # Compute statistics
     max = np.max(frequencies)
