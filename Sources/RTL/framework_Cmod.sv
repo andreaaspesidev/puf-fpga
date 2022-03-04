@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-//! TARGET: BASYS3 board --> The module is fed with the 100 Mhz system clock from the Basys3 board. No clock wizard is instantiated.
+//! TARGET: CmodA7-35 board --> The module is fed with the 12Mhz system clock from the CmodA7-35 board. Clock wizard is instantiated to clock the other modules with 100Mhz clock.
 
 
 //! This is the top module of the project. It instantiates:
@@ -11,7 +11,7 @@
 //! * The FIFO module to store responses. (Only some of the counter bits are exposed to the FIFO, in order to perform the last shift of the averege)
 
 
-module framework#(
+module framework_Cmod#(
     //PUF parameters
     parameter NUM_LOOPS = 1280,
     parameter RESPONSE_BITS = 32,
@@ -29,7 +29,7 @@ module framework#(
     parameter RESPONSE_ID = 8'b10101011
 )
 (
-    input clk,
+    input clk_pin, //12Mhz clock from Cmod board
     input reset,
 
     input rx_pin,
@@ -40,6 +40,8 @@ module framework#(
     localparam REPETITIONS_EXPONENT = REPETITIONS_BITS-1;
 
     //puf signals
+
+    wire clk; //100Mhz clock out of clk wizard
 
     wire PUF_start;
     wire PUF_reset;
@@ -73,6 +75,13 @@ module framework#(
     wire FIFO_reset;
     wire [RESPONSE_BITS-1:0] FIFO_in;
     wire FIFO_re;
+
+    
+    clk_wiz_0 clk_wizard_inst (
+        .clk_out1(clk),
+        .reset(reset),
+        .clk_in1(clk_pin)
+    );
 
     MainStateMachine MainStateMachine_inst (
       .clk (clk ),
@@ -122,7 +131,7 @@ module framework#(
       .start_puf (PUF_start),
       .challenge (challenge ),
       .loop_response (loop_response ),
-      .loop_number (loop_number ), // at the moment not used
+      .loop_number (loop_number ),
       .store_response_puf (store_response_puf ),
       .done  (PUF_done)
     );

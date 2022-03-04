@@ -17,7 +17,6 @@ module tb_StateMachine;
   reg reset = 0;
   reg start = 0;
   reg [CHALLENGE_BITS-1:0] challenge = 0;
-  //reg next_enable = 0;
   wire done;
   wire reset_puf;
   wire [$clog2(NUM_LOOPS-1):0] select_puf;
@@ -38,7 +37,6 @@ module tb_StateMachine;
     .reset (reset ),
     .start (start ),
     .challenge (challenge ),
-    //.next_enable (next_enable ),
     .done (done ),
     .reset_puf (reset_puf ),
     .select_puf (select_puf ),
@@ -48,7 +46,6 @@ module tb_StateMachine;
 
   initial begin
     begin
-        //$stop;
         clk <= 0; //initialize clock to 0
         reset = 1; // initialize reset to 1
         start = 0; //initialize start to 0

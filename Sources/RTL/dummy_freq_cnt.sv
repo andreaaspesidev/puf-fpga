@@ -1,31 +1,13 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 02/24/2022 11:50:17 AM
-// Design Name: 
-// Module Name: dummy_freq_cnt
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
-//! This module computes, given the challenge, the next TERO to evaluate
+//! This module computes, given the challenge, the next TERO to evaluate. At the moment it ignores the Challenge and outputs the very next TERO loop number. 
+//! It's possible to implement a variant of this block exposing the next TERO number basing on the challenge given in input. It would be necessary to set the local parameter "last_TERO", in order to
+//! correctly assert the "done" signal at the end. 
 
 module dummy_freq_cnt #(
     parameter NUM_LOOPS = 32, //! number of total TERO loops
     parameter CHALLENGE_BITS = 8) ( //!number of bits to represent challenge
 
-    //input [N_TERO_BITS-1:0] curr_TERO, // number of current TERO selected
     input clk,
     input [CHALLENGE_BITS-1:0] challenge_in, //! input challenge
 

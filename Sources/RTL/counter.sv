@@ -1,25 +1,7 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 02/22/2022 03:28:23 PM
-// Design Name: 
-// Module Name: counter
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
 
 //! Ripple counter with async reset
+
 module counter#(
     parameter NUM_BITS = 32
 ) (
@@ -43,6 +25,7 @@ module counter#(
        begin: gen_ripple_block
             assign d[i] = ~q[i];  // self-loop for this block
             assign t[i+1] = d[i]; // link the block with the next
+            
             // Generate the block
             FDCE #(
                 .INIT(1'b0)
