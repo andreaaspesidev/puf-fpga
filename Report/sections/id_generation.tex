@@ -1,5 +1,69 @@
-Lorem ipsum \textbf{dolor} sit amet, consectetur adipiscing elit. Suspendisse facilisis ac erat vitae luctus. Aliquam in faucibus urna. Nulla ullamcorper tristique odio eu euismod. Nunc porta euismod orci vel ornare. Suspendisse suscipit non orci non blandit. In est massa, blandit sed metus non, commodo euismod leo. Nunc nec purus sed est imperdiet lacinia. Nullam convallis lectus neque, nec gravida \textbf{dolor} semper vel.
+%
+% Breve descrizione analisi loro script, differenti
+% modalità di generazione ID. Versione scelta da noi (2Comp)
+% Pseudo codice generazione con 2Comp
+%
 
-Donec quam odio, pulvinar sit amet ipsum et, volutpat ullamcorper ex. Quisque porta, justo nec tempor ornare, leo mauris iaculis ex, sit amet pellentesque quam mi eget neque. Phasellus maximus bibendum sem non pharetra. Morbi elementum tempor sem in scelerisque. Curabitur egestas pharetra libero eget bibendum. Aenean sit amet molestie risus. Quisque ac sodales elit. Nulla tincidunt ac augue vitae malesuada. Proin eget sagittis arcu, non molestie nibh. Nullam in nulla sit amet lacus semper molestie eget eget turpis. Nunc vel urna sit amet nisl facilisis pulvinar in fermentum ligula. Morbi sollicitudin laoreet est eget pharetra. Quisque laoreet porta sem, quis fermentum leo mollis at.
+As stated in \textit{Section~\ref{sec:design}}, the generation of the ID from the PUF responses can be made in different ways. This choice, naturally,
+influences the way the frequencies must be exposed in output (which responses to expose and in which order, given the input challenge). In order to
+compare different algorithms we decided to expose in output all the 1280 frequencies, regardless of the challenge. Before computing the actual IDs, we
+split the responses in 80 batches of 16 frequencies each. Each batch contains frequencies coming from PUFs of the same type.
+In the following some further details about the main algorithms:
 
-In facilisis viverra felis, a dapibus mauris maximus sed. Curabitur ut eros a odio mollis fermentum vel vel eros. Donec id vestibulum erat, sit amet laoreet urna. Suspendisse aliquam, sapien quis suscipit dapibus, ligula nisl lacinia sem, in tempus neque quam et turpis. Nulla facilisi. Donec malesuada odio sit amet est egestas, in sollicitudin lorem vehicula. Quisque nec dictum quam, vitae tincidunt est. Curabitur id elit fringilla, tincidunt augue ac, pellentesque \textbf{dolor}. Vivamus leo sapien, eleifend eget diam a, porttitor ullamcorper arcu. Donec dignissim ipsum vel sapien porttitor, tincidunt placerat \textbf{dolor} condimentum. Aenean non elementum orci, id molestie nunc. Donec pharetra arcu sem, mollis maximus massa pretium ut. Duis sed congue libero, eu laoreet tortor. Phasellus sed consectetur nisl. Nulla interdum ligula eu placerat porttitor.
+\subsection{2Compare}
+\label{subsec:2Comp}
+
+2Compare algorithms takes two frequencies, $f_i$ and $f_j$ from each batch, and returns 1 if $f_i > f_j$, else $0$.
+Thus, the resulting ID has 80 bits, one for each batch.\\
+
+Below the pseudo-algorithm:
+
+\begin{algorithm}[H]
+    \label{alg:2comp}
+    \caption{2Compare Algorithm}
+    \label{alg:var1}
+    \label{protocol11}
+    \begin{algorithmic}[1]
+    \REQUIRE{$i,j \in [1,16]$, $frequencies(batchIndex,freq)$}
+    %\ENSURE { $batchIndex \in [1,80], freq \in [1,16]$}
+    %\STATE{$\textbf{Output: } ID [1:80]$}
+    \FOR{$batchIndex = 1\ to\ 80$}
+    \STATE{$ID[batchIndex] = frequencies(batchIndex,i)>frequencies(batchIndex,j)$}
+    \ENDFOR
+    \STATE{$return\ \textbf{ID}$}
+    \end{algorithmic}
+    \end{algorithm} 
+
+After our analysis we stuck to this algorithm since it's easy to implement and the resulting uniqueness and reliability are
+are quite good.
+
+\subsection{2Comp Neighbor}
+\label{subsec:2Compneigh}
+
+2Compare neighbor is a variation of the previous one. Instead of taking two frequencies for each batch, it compares the
+"neighbor" frequencies of the same batch. We decided not to use this algorithm since, with 16 frequencies batches, the
+number of bits for each ID is 8, way too low to identify a sufficient number of devices. Increasing the number of frequencies
+per batch partially solves this problem, since (for the same number of TERO instances) the number of batches (and thus of challenges)
+is consequently reduced.
+
+
+
+\subsection{Lehmer-Gray}
+\label{subsec:lehmer}
+
+The response generation through Lehmer-Gray encoding is the best in terms of extracted entropy.
+allowing to extract 49 bits from a 16 bits batch. It was previously used in \cite{PUFKY}, basing on the method proposed
+by Yin and Qu in \cite{YinQu} to extract maximum entropy.
+
+The algorithm consists in computing the Lehmer coefficients $s_i$ for each frequency of a batch, with the following formula:\\
+
+\begin{equation}
+    \label{eq:lehmer_coeff}
+    % \begin{align}[center]
+    s_i = |\{j > i : freq(j)<freq(i)\}|
+    % \end{align}
+\end{equation}
+
+After that, the obtained coefficients are Gray encoded, and some of the bits of the encoded coefficient are taken as a response.
+
+We did not choose this algorithm since the choice of the bits to take is not trivial, and depends on the particular implementation.
