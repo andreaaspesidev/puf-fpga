@@ -1,5 +1,18 @@
-Lorem ipsum \textbf{dolor} sit amet, consectetur adipiscing elit. Suspendisse facilisis ac erat vitae luctus. Aliquam in faucibus urna. Nulla ullamcorper tristique odio eu euismod. Nunc porta euismod orci vel ornare. Suspendisse suscipit non orci non blandit. In est massa, blandit sed metus non, commodo euismod leo. Nunc nec purus sed est imperdiet lacinia. Nullam convallis lectus neque, nec gravida \textbf{dolor} semper vel.
+% Versione Vivado, board e chip 
+% che avete preso come target, frequenza operativa, 
+% eventuali software aggiuntivi usati.
+% Articolo di riferimento implementazione
 
-Donec quam odio, pulvinar sit amet ipsum et, volutpat ullamcorper ex. Quisque porta, justo nec tempor ornare, leo mauris iaculis ex, sit amet pellentesque quam mi eget neque. Phasellus maximus bibendum sem non pharetra. Morbi elementum tempor sem in scelerisque. Curabitur egestas pharetra libero eget bibendum. Aenean sit amet molestie risus. Quisque ac sodales elit. Nulla tincidunt ac augue vitae malesuada. Proin eget sagittis arcu, non molestie nibh. Nullam in nulla sit amet lacus semper molestie eget eget turpis. Nunc vel urna sit amet nisl facilisis pulvinar in fermentum ligula. Morbi sollicitudin laoreet est eget pharetra. Quisque laoreet porta sem, quis fermentum leo mollis at.
-
-In facilisis viverra felis, a dapibus mauris maximus sed. Curabitur ut eros a odio mollis fermentum vel vel eros. Donec id vestibulum erat, sit amet laoreet urna. Suspendisse aliquam, sapien quis suscipit dapibus, ligula nisl lacinia sem, in tempus neque quam et turpis. Nulla facilisi. Donec malesuada odio sit amet est egestas, in sollicitudin lorem vehicula. Quisque nec dictum quam, vitae tincidunt est. Curabitur id elit fringilla, tincidunt augue ac, pellentesque \textbf{dolor}. Vivamus leo sapien, eleifend eget diam a, porttitor ullamcorper arcu. Donec dignissim ipsum vel sapien porttitor, tincidunt placerat \textbf{dolor} condimentum. Aenean non elementum orci, id molestie nunc. Donec pharetra arcu sem, mollis maximus massa pretium ut. Duis sed congue libero, eu laoreet tortor. Phasellus sed consectetur nisl. Nulla interdum ligula eu placerat porttitor.
+A wide variety of Physical Unclonable Functions have been proposed in literature, exploiting
+a very wide range of random and unpredictable properties of electronic chips to generate unique and reliable
+responses required by specific application like chip Identification, cryptographic key generation, logic obfuscation
+and IP protection. Among the ones which are suitable to be implemented on FPGA, Transient Effect Ring Oscillator (TERO) 
+PUFs have been proved to have very good properties in terms of uniqueness, reliability and resistance to
+environmental changes.\\\\
+In \cite{ref_pap} by A.Wild et al., an in-depth analysis of RO, Loop and TERO PUFs has been performed comparing
+the responses coming from 100 Basys3 boards on which 1280 PUFs were implemented. \\
+Our project consists in a further analysis of the data acquired by the authors of the paper, followed by a SystemVerilog
+implementation of the TERO PUF for device identification purposes, targeting both Basys3 and CmodA7-35t boards 
+(both mounting XC7-A35T FPGA), tested at 100Mhz. \\\\
+In order to design and test the PUF modules Xilinx Vivado 2020.2 was used. The analysis of the PUF responses and
+the generation of the IDs has been performed through some dedicated Python scripts and jupiter notebooks.\\
