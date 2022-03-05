@@ -1,5 +1,60 @@
-Lorem ipsum \textbf{dolor} sit amet, consectetur adipiscing elit. Suspendisse facilisis ac erat vitae luctus. Aliquam in faucibus urna. Nulla ullamcorper tristique odio eu euismod. Nunc porta euismod orci vel ornare. Suspendisse suscipit non orci non blandit. In est massa, blandit sed metus non, commodo euismod leo. Nunc nec purus sed est imperdiet lacinia. Nullam convallis lectus neque, nec gravida \textbf{dolor} semper vel.
+After having realized the design, we transferred it to our two Basys3. \\
+With the help of a utility script, we collected frequencies in various configurations. 
+In particular, we wanted to verify the best number of repetitions and evaluation time,
+in order to have a high reliability, but waiting a reasonable amount of
+time for the PUF response. \\
+\begin{itemize}
+    \item TERO loop are expected to oscillate for a short period of time, then settle in a stable state.
+    Using a too short evaluation time truncates the oscillation measurement: although the resulting read
+    frequency values display a unique pattern, we can better capture the uniqueness  
+    if we wait for most of the loops to stop oscillating. At the same time, a high evaluation time
+    can significantly slow down the process, and make the PUF unusable.
+    \item Repeating the measurement several times (and averaging the values) is necessary as the
+    oscillation frequency of a TERO loop depends, apart from the instance-dependent process variations, on environmental
+    noise (e.g., due to temperature or supply voltage differences) and random temporal noise 
+    (e.g., temporal fluctuations in the power supply). The latter type is not constant and can be
+    averaged out. This approach has been used several times, as it has been proved to increase the reliability
+    (as we verified via experiments).
+\end{itemize}
 
-Donec quam odio, pulvinar sit amet ipsum et, volutpat ullamcorper ex. Quisque porta, justo nec tempor ornare, leo mauris iaculis ex, sit amet pellentesque quam mi eget neque. Phasellus maximus bibendum sem non pharetra. Morbi elementum tempor sem in scelerisque. Curabitur egestas pharetra libero eget bibendum. Aenean sit amet molestie risus. Quisque ac sodales elit. Nulla tincidunt ac augue vitae malesuada. Proin eget sagittis arcu, non molestie nibh. Nullam in nulla sit amet lacus semper molestie eget eget turpis. Nunc vel urna sit amet nisl facilisis pulvinar in fermentum ligula. Morbi sollicitudin laoreet est eget pharetra. Quisque laoreet porta sem, quis fermentum leo mollis at.
+\subsection{Evaluation time and Repetitions}
 
-In facilisis viverra felis, a dapibus mauris maximus sed. Curabitur ut eros a odio mollis fermentum vel vel eros. Donec id vestibulum erat, sit amet laoreet urna. Suspendisse aliquam, sapien quis suscipit dapibus, ligula nisl lacinia sem, in tempus neque quam et turpis. Nulla facilisi. Donec malesuada odio sit amet est egestas, in sollicitudin lorem vehicula. Quisque nec dictum quam, vitae tincidunt est. Curabitur id elit fringilla, tincidunt augue ac, pellentesque \textbf{dolor}. Vivamus leo sapien, eleifend eget diam a, porttitor ullamcorper arcu. Donec dignissim ipsum vel sapien porttitor, tincidunt placerat \textbf{dolor} condimentum. Aenean non elementum orci, id molestie nunc. Donec pharetra arcu sem, mollis maximus massa pretium ut. Duis sed congue libero, eu laoreet tortor. Phasellus sed consectetur nisl. Nulla interdum ligula eu placerat porttitor.
+Using the data we collected, we got to the same conclusions of the paper: using more than $ 2^5 $
+clock cycles for evaluation does not produce a distinguishable improvement in reliability nor uniqueness 
+(as this latter is little influenced by evaluation time). Instead, increasing the number of repetition
+from $ 1 $ to $ 2^{12} $ adds an extra $ 5\% $ to the reliability indicator (but slows the response time of the PUF). \\
+Using an evaluation time of $ 2^5 $ clock cycles and $ 2^{12} $ repetitions
+is the best compromise between reliability and response time of the PUF. \\
+
+\subsection{Reliability}
+
+To calculate the reliability of our implementation, we used 100 measurements each at a different configuration,
+comparing the same challenge number response:
+\begin{equation}
+    Reliability_i = 100\% * (1 - \frac{1}{s} \sum_{t=1}^{s} \frac{HD(Xr_i, X_{i,t})}{n})
+\end{equation}
+were $ i $ is the i-th challenge (among the 120 available), $ HD $ is the Hamming Distance, $ Xr_i $ is the first response measured 
+for that challenge, $ X_{i,t} $ represents each of the 100 responses generated for the i-th challenge, $s=100$ are the measurements taken
+and $n=80$ is the number of bits of each response. \\
+
+Using the chosen configuration (evaluation=$ 2^5 $, repetitions=$ 2^{12} $), we got a mean reliability 
+of $ 97.4\% $ for the first PUF ($TERO\_AA$), $ 96.9\% $ for the second PUF ($TERO\_AP$). \\
+The ideal value for the reliability is $100\%$ (otherwise stated: for each evaluation of the same PUF, fixed the challenge, we would like the same exact response bitwise)
+
+\subsection{Uniqueness}
+With the same 100 measurements for the two PUFs of before, we tried to estimate the uniqueness of the response for each given challenge.
+Of course to get to a more accurate result, lots of PUFs are required. \\
+The formula used for the uniqueness is the following:
+\begin{equation}
+    Uniqueness_i = 100\% * \frac{k}{k(k-1)} \sum_{i=1}^{k-1}\sum_{j=i+1}^{k} \frac{HD(X_i,X_j)}{n}
+\end{equation}
+were $ i $ is the i-th challenge (among the 120 available), $k=2$ is the number of PUFs used, $ HD $ is the Hamming Distance, $ X_i $ is the response of the challenge 
+for the i-th PUF, $ X_j $ is the response of the challenge for the j-th PUF and $n=80$ is the number of bit of each response. \\
+
+Using the chosen configuration (evaluation=$ 2^5 $, repetitions=$ 2^{12} $), we got a mean uniqueness of $50.25\%$.
+The ideal value is $50\%$ (otherwise stated: the probability of a bit flip between two responses of different PUFs, fixed the challenge, is $50\%$ - the toss of a coin).
+
+\subsection{Conclusion}
+Seen such results, we consider the implementation of the TERO PUF successful, and in line with the results of the paper. \\
+Further work can be done to use the challenge directly in the FPGA to send only the needed frequency measurements, and in this way avoid
+exposing the whole CRP (i.e. Challenge Response) space. As anticipated in the design, little effort is required to achieve this with our implementation.
