@@ -4,6 +4,7 @@
 !Analysis/**
 !Report/**/*.tex
 !Report/**/*.eps
+!Report/**/*.bib
 !Report/report.pdf
 !*.xpr
 !.gitignore
