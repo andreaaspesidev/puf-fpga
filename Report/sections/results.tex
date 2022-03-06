@@ -63,4 +63,14 @@ The ideal value is $50\%$ (otherwise stated: the probability of a bit flip betwe
 Seen such results, we consider the implementation of the TERO PUF successful, and in line with the results of the paper. \\
 Further work can be done to use the challenge directly in the FPGA to send only the needed frequency measurements, and in this way avoid
 exposing the whole CRP (i.e. Challenge Response) space. Little effort is required to achieve this with our implementation, since a dedicated block has already been
-designed for this purpose.
+designed for this purpose. \\\\
+The worst negative slack is $1.949ns$. \\
+The overall resources consumed on the Artix-7 are:
+\begin{itemize}
+    \item Slices: 19.47\% (1109 SliceL, 478 SliceM)
+    \item LUTs: 21.66\% (4506 used over 20800 available)
+    \item Flip Flops: 8.17\% (3397 used over 41600 available)
+    \item Block RAMS: 4.00\% (2 used over 50 available)
+\end{itemize}
+Seen these results, slightly better than the ones of the reference paper,
+it would be possible to adapt the implementation also for the smaller Artix-7 A15T.
