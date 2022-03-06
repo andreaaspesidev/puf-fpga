@@ -15,7 +15,7 @@ module framework#(
     //PUF parameters
     parameter NUM_LOOPS = 1280,
     parameter RESPONSE_BITS = 32,
-    parameter REPETITIONS_BITS = 2,
+    parameter REPETITIONS_BITS = 13,
     parameter TOT_CNT_BITS = RESPONSE_BITS + REPETITIONS_BITS -1,
     parameter FIRST_CNT_BITS = 2,
     parameter EVAL_TIME_BITS = 6,
