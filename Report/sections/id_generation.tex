@@ -4,17 +4,17 @@
 % Pseudo codice generazione con 2Comp
 %
 
-As stated in \textit{Section~\ref{sec:design}}, the generation of the ID from the PUF responses can be made in different ways. This choice, naturally,
+As anticipated in \textit{Section~\ref{sec:design}}, the generation of the ID from the PUF responses can be made in different ways. This choice, naturally,
 influences the way the frequencies must be exposed in output (which responses to expose and in which order, given the input challenge). In order to
-compare different algorithms we decided to expose in output all the 1280 frequencies, regardless of the challenge. Before computing the actual IDs, we
-split the responses in 80 batches of 16 frequencies each. Each batch contains frequencies coming from PUFs of the same type.
-In the following some further details about the main algorithms:
+compare different algorithms we decided to output all the 1280 frequencies, regardless of the challenge. Before computing the actual IDs, we
+split the responses in 80 batches of 16 frequencies each (as in the reference paper \cite{ref_pap}). Each batch contains frequencies coming from loops of the same type.
+In the following, some further details about the main algorithms.
 
 \subsection{2Compare}
 \label{subsec:2Comp}
 
-2Compare algorithms takes two frequencies, $f_i$ and $f_j$ from each batch, and returns 1 if $f_i > f_j$, else $0$.
-Thus, the resulting ID has 80 bits, one for each batch.\\
+2Compare algorithm takes two frequencies $f_i$ and $f_j$ from each batch, and returns 1 if $f_i > f_j$, else $0$.
+Thus, the resulting ID has 80 bits, one for each batch, for a total of 120 unique responses.\\
 
 Below the pseudo-algorithm:
 
@@ -25,8 +25,6 @@ Below the pseudo-algorithm:
     \label{protocol11}
     \begin{algorithmic}[1]
     \REQUIRE{$i,j \in [1,16]$, $frequencies(batchIndex,freq)$}
-    %\ENSURE { $batchIndex \in [1,80], freq \in [1,16]$}
-    %\STATE{$\textbf{Output: } ID [1:80]$}
     \FOR{$batchIndex = 1\ to\ 80$}
     \STATE{$ID[batchIndex] = frequencies(batchIndex,i)>frequencies(batchIndex,j)$}
     \ENDFOR
@@ -34,13 +32,13 @@ Below the pseudo-algorithm:
     \end{algorithmic}
     \end{algorithm} 
 
-After our analysis we stuck to this algorithm since it's easy to implement and the resulting uniqueness and reliability are
+After our analysis we stuck to this algorithm since it's easy to be implemented and the resulting uniqueness and reliability
 are quite good.
 
 \subsection{2Comp Neighbor}
 \label{subsec:2Compneigh}
 
-2Compare neighbor is a variation of the previous one. Instead of taking two frequencies for each batch, it compares the
+2Compare neighbor is a variation of the previous one. Instead of taking two frequencies from each batch, it compares the
 "neighbor" frequencies of the same batch. We decided not to use this algorithm since, with 16 frequencies batches, the
 number of bits for each ID is 8, way too low to identify a sufficient number of devices. Increasing the number of frequencies
 per batch partially solves this problem, since (for the same number of TERO instances) the number of batches (and thus of challenges)
@@ -51,12 +49,11 @@ is consequently reduced.
 \subsection{Lehmer-Gray}
 \label{subsec:lehmer}
 
-The response generation through Lehmer-Gray encoding is the best in terms of extracted entropy.
-allowing to extract 49 bits from a 16 bits batch. It was previously used in \cite{PUFKY}, basing on the method proposed
+The response generation through Lehmer-Gray encoding is the best in terms of extracted entropy,
+allowing to extract 49 bits from a 16 bits batch. It was previously used in \cite{PUFKY}, based on the method proposed
 by Yin and Qu in \cite{YinQu} to extract maximum entropy.
 
-The algorithm consists in computing the Lehmer coefficients $s_i$ for each frequency of a batch, with the following formula:\\
-
+The algorithm consists in computing the Lehmer coefficients $s_i$ for each frequency of a batch, with the following formula:
 \begin{equation}
     \label{eq:lehmer_coeff}
     % \begin{align}[center]

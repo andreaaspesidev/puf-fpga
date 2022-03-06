@@ -16,8 +16,8 @@ While the loop tries to resolve the unstable state, it oscillates for a short ti
 The number of oscillation of each loop is counted using a two-stages counter (see \textit{Figure~\ref{img:TERO_COUNTER}}).
 Combining the outcomes of the loops with a specific algorithm (see \textit{Section~\ref{sec:id_generation}}),
 we can obtain the overall response of the TERO PUF (ID of the FPGA). \\
-In an Artix7 Slice we can put two TERO loops (see \textit{Figure~\ref{img:TERO_CONNECTIONS}}), differing for the internal routing.
-These slices are arranged in four adjacent columns, placed in two different positions in the FPGA (see \textit{Figure~\ref{img:TERO_PLACEMENT}}).
+In an Artix-7 Slice we can put two TERO loops (see \textit{Figure~\ref{img:TERO_CONNECTIONS}}), differing for the internal routing.
+These TERO slices are arranged in four adjacent columns, placed in two different positions in the FPGA (see \textit{Figure~\ref{img:TERO_PLACEMENT}}).
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.5]{TERO_connections.png}
@@ -25,7 +25,7 @@ These slices are arranged in four adjacent columns, placed in two different posi
     \label{img:TERO_CONNECTIONS}
 \end{figure} \\
 In this way, we obtain eight different types of loops 
-(two for the differences at slice-instance times four due to the column arrangement).
+(two for the differences at slice-instance, times four due to the column arrangement).
 Each TERO loop has an enable signal that starts the oscillation when asserted. 
 These signals are controlled by an FSM during an evaluation cycle, where each loop is activated and its oscillation measured and averaged.
 The evaluation time and the number of measurement used for the average are design parameters (see \textit{Subsection~\ref{subsec:eval_and_repetitions}}).
@@ -48,8 +48,9 @@ net\footnote{can be found at \href{https://github.com/ben-marshall/uart}{\color{
 
 \subsection{Challenges}
 The challenge number sent to the PUF \textbf{could} be used to avoid the evaluation of all the loops.
-The needed frequencies are specific to the algorithm used to generate the final response 
-(identifier of the FPGA) during the post-processing on the PC. 
+The needed frequencies
+\footnote{In this report we use the word \textbf{frequency} as synonym of number of oscillations performed by a TERO loop during an evaluation.}
+depend on the algorithm used to generate the final response, during the post-processing on the PC. 
 At the moment, we decided to expose all the frequencies in order to be able to experiment 
 with various algorithms. 
 
