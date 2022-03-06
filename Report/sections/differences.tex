@@ -1,0 +1,28 @@
+Though the composition and placement of the TERO loops are the same compared to 
+the Reference paper \cite{ref_pap}, other design choices differ.
+In the original implementation, some parts of the design were missing.
+
+\subsection{Averaging of TERO loop oscillations}
+We implemented our version of the averaging step in the evaluation cycle, 
+since it was missing in the original implementation code.
+Multiple measurements of each loop's oscillations are added using the same shared counter 
+(to optimize resources), with a number of bits extended for this purpose. 
+At the end, a shift is performed to get the averaged measurement.
+
+\subsection{Finite State Machines}
+During our revision of the reference implementation, we found zero to little comments and 
+lots of unused code.
+We decided to write from scratch the two FSM (both present also in the original implementation),
+and changed completely the one dedicated to the communication.
+
+\subsection{Routing}
+Most of the routes were conserved, we rewrote the script in a more readable way, and fixed some
+warnings about combinatorial loops that prevented the generation of the Bitstream 
+in newer versions of Vivado.
+
+\subsection{Memorizing oscillations}
+We used a Xilinx FIFO generator IP, in First-Word-Falls-Through configuration to generate the FIFO
+that memorizes the final measurements of each TERO loops, and converts the width of each
+measurement in single byte words, ready to be sent without further transformations via UART.
+The empty FIFO signal was used instead of a dedicated counter to detect the end of the data transfer.
+Some internal registers used to buffer signals were removed because not needed for the TERO.

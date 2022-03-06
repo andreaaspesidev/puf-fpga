@@ -1,5 +1,57 @@
-Lorem ipsum \textbf{dolor} sit amet, consectetur adipiscing elit. Suspendisse facilisis ac erat vitae luctus. Aliquam in faucibus urna. Nulla ullamcorper tristique odio eu euismod. Nunc porta euismod orci vel ornare. Suspendisse suscipit non orci non blandit. In est massa, blandit sed metus non, commodo euismod leo. Nunc nec purus sed est imperdiet lacinia. Nullam convallis lectus neque, nec gravida \textbf{dolor} semper vel.
+\subsection{Architecture}
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.75]{TERO_loop.png}
+    \caption{TERO Loop structure}
+    \label{img:TERO_LOOP}
+\end{figure}
+The TERO PUF is composed of a variable number of TERO loops. Each of them is based on
+two AND gates and two inverters (see \textit{Figure~\ref{img:TERO_LOOP}}). \\
+The two inverters are cross-coupled and brought into an unstable state via AND gates. 
+While the loop tries to resolve the unstable state, it oscillates for a short time.
+The number of oscillation of each loop is counted using a two-stage counter.
+Combining the outcomes of the loops with a specific algorithm (see \textit{Section~\ref{sec:id_generation}}),
+we can obtain the overall response of the TERO PUF (ID of the FPGA). \\
+In an Artix7 Slice we can put two TERO loops (see \textit{Figure~\ref{img:TERO_CONNECTIONS}}), differing for the internal routing.
+These slices are arranged in four adjacent columns, placed in two different positions in the FPGA (see \textit{Figure~\ref{img:TERO_PLACEMENT}}).
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.5]{TERO_connections.png}
+    \caption{Connection of the two TERO loops inside one Slice}
+    \label{img:TERO_CONNECTIONS}
+\end{figure} \\
+In this way, we obtain eight different types of loops 
+(two for the differences at slice-instance times four due to the column arrangement).
+Each TERO loop has an enable signal that starts the oscillation when asserted. 
+These signals are controlled by an FSM during an evaluation cycle, where each loop is activated and its oscillation measured and averaged.
+The evaluation time and the number of measurement used for the average are design parameters (see \textit{Subsection~\ref{subsec:eval_and_repetitions}}).
 
-Donec quam odio, pulvinar sit amet ipsum et, volutpat ullamcorper ex. Quisque porta, justo nec tempor ornare, leo mauris iaculis ex, sit amet pellentesque quam mi eget neque. Phasellus maximus bibendum sem non pharetra. Morbi elementum tempor sem in scelerisque. Curabitur egestas pharetra libero eget bibendum. Aenean sit amet molestie risus. Quisque ac sodales elit. Nulla tincidunt ac augue vitae malesuada. Proin eget sagittis arcu, non molestie nibh. Nullam in nulla sit amet lacus semper molestie eget eget turpis. Nunc vel urna sit amet nisl facilisis pulvinar in fermentum ligula. Morbi sollicitudin laoreet est eget pharetra. Quisque laoreet porta sem, quis fermentum leo mollis at.
+\subsection{Communication}
+The communication with a PC is handled by another FSM, which controls the UART module, 
+the FIFO storing the loop responses and the challenge memory. \\
+The protocol is the following:
+\begin{enumerate}
+    \item The PC sends a single byte request to start the interaction.
+    \item The PUF replies with a single byte known identifier and waits for a challenge byte.
+    \item The PC sends a challenge number encoded in a single byte.
+    \item The PUF starts the evaluation of the TERO loops, as specified in details in \textit{Section~\ref{sec:results}}. 
+          Each intermediate result is stored in a FIFO queue.
+    \item When the evaluation is completed, the FIFO data is sent to the PC all-in-once.
+    \item The communication can start again from 1.
+\end{enumerate}
+To handle the UART communication we exploited open-source Verilog designs found in the
+net\footnote{can be found at \href{https://github.com/ben-marshall/uart}{\color{bluePoli}https://github.com/ben-marshall/uart}}, after verifying them.
 
-In facilisis viverra felis, a dapibus mauris maximus sed. Curabitur ut eros a odio mollis fermentum vel vel eros. Donec id vestibulum erat, sit amet laoreet urna. Suspendisse aliquam, sapien quis suscipit dapibus, ligula nisl lacinia sem, in tempus neque quam et turpis. Nulla facilisi. Donec malesuada odio sit amet est egestas, in sollicitudin lorem vehicula. Quisque nec dictum quam, vitae tincidunt est. Curabitur id elit fringilla, tincidunt augue ac, pellentesque \textbf{dolor}. Vivamus leo sapien, eleifend eget diam a, porttitor ullamcorper arcu. Donec dignissim ipsum vel sapien porttitor, tincidunt placerat \textbf{dolor} condimentum. Aenean non elementum orci, id molestie nunc. Donec pharetra arcu sem, mollis maximus massa pretium ut. Duis sed congue libero, eu laoreet tortor. Phasellus sed consectetur nisl. Nulla interdum ligula eu placerat porttitor.
+\subsection{Challenges}
+The challenge number sent to the PUF \textbf{could} be used to avoid the evaluation of all the loops.
+The needed frequencies are specific to the algorithm used to generate the final response 
+(identifier of the FPGA) during the post-processing on the PC. 
+At the moment, we decided to expose all the frequencies in order to be able to experiment 
+with various algorithms. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{TERO_placement.png}
+    \caption{The TERO loops in different columns have different position in relation to the switch matrix, leading to different loop characteristics.}
+    \label{img:TERO_PLACEMENT}
+\end{figure}

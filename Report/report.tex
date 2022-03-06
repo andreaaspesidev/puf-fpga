@@ -145,6 +145,7 @@
 \section{Design}
 \label{sec:design}
 \input{sections/design}
+\pagebreak
 
 % Sottosezioni
 % 1. Architettura: come è composto un tero loop (e come si fa partire), macchine a stati 
@@ -162,6 +163,16 @@
 \section{ID Generation}
 \label{sec:id_generation}
 \input{sections/id_generation}
+\pagebreak
+
+%---------------------------------
+% DIFFERENCES WITH REF. IMPL.
+%---------------------------------
+%
+\section{Differences with Reference implementation}
+\label{sec:differences}
+\input{sections/differences}
+\pagebreak
 
 
 %---------------------------------
@@ -176,305 +187,13 @@
 \section{Results and Conclusion}
 \label{sec:results}
 \input{sections/results}
+\pagebreak
 
-\newpage
-\
-\newpage
-\
-\newpage
-
-%-----------------------------------------------------------------------------
-% INTRODUCTION
-%-----------------------------------------------------------------------------
-\section{Introduction}
-\label{sec:intro}
-This document is intended to be both an example of the Polimi \LaTeX{} template for Master Theses in article format,
-as well as a short introduction to its use. It is not intended to be a general introduction to \LaTeX{} itself,
-and the reader is assumed to be familiar with the basics of creating and compiling \LaTeX{} documents (see \cite{oetiker1995not, kottwitz2015latex}). 
-\\
-The cover page of the thesis in article format must contain all the relevant information:
-title of the thesis, name of the Study Programme, name(s) of the author(s),
-student ID number, name of the supervisor, name(s) of the co-supervisor(s) (if any), academic year.
-\\
-Be sure to select a title that is meaningful.
-It should contain important keywords to be identified by indexer.
-Keep the title as concise as possible and comprehensible even to people who are not experts in your field.
-The title has to be chosen at the end of your work so that it accurately captures the main subject of the manuscript.
-
-It is convenient to break the article format of your thesis (in article format) into sections and subsections. 
-If necessary, subsubsections, paragraphs and subparagraphs can be used. 
-A new section is created by the command
-\begin{verbatim}
-\section{Title of the section}
-\end{verbatim}
-The numbering can be turned off by using \verb|\section*{}|.
-A new subsection is created by the command
-\begin{verbatim}
-\subsection{Title of the subsection}
-\end{verbatim}
-and, similarly, the numbering can be turned off by adding an asterisk as follows 
-\begin{verbatim}
-\subsection*{}
-\end{verbatim}
-It is recommended to give a label to each section by using the command
-\begin{verbatim}
-\label{sec:section_name}%
-\end{verbatim}
-where the argument is just a text string that you'll use to reference that part
-as follows: \textit{Section~\ref{sec:introduction} contains \sc{INTRODUCTION}  \dots}.
-
-%-----------------------------------------------------------------------------
-% EQUATIONS
-%-----------------------------------------------------------------------------
-\section{Equations}
-\label{sec:eqs}
-This section gives some examples of writing mathematical equations in your thesis.
-
-Maxwell's equations read:
-\begin{subequations}
-    \label{eq:maxwell}
-    \begin{align}[left=\empheqlbrace]
-    \nabla\cdot \bm{D} & = \rho, \label{eq:maxwell1} \\
-    \nabla \times \bm{E} +  \frac{\partial \bm{B}}{\partial t} & = \bm{0}, \label{eq:maxwell2} \\
-    \nabla\cdot \bm{B} & = 0, \label{eq:maxwell3} \\
-    \nabla \times \bm{H} - \frac{\partial \bm{D}}{\partial t} &= \bm{J}. \label{eq:maxwell4}
-    \end{align}
-\end{subequations}
-
-Equation~\eqref{eq:maxwell} is automatically labeled by \texttt{cleveref},
-as well as Equation~\eqref{eq:maxwell1} and Equation~\eqref{eq:maxwell3}.
-Thanks to the \verb|cleveref| package, there is no need to use \verb|\eqref|.
-Equations have to be numbered only if they are referenced in the text.
-
-Equations~\eqref{eq:maxwell_multilabels1}, \eqref{eq:maxwell_multilabels2}, \eqref{eq:maxwell_multilabels3}, and \eqref{eq:maxwell_multilabels4} show again Maxwell's equations without brace:
-\begin{align}
-    \nabla\cdot \bm{D} & = \rho, \label{eq:maxwell_multilabels1} \\
-    \nabla \times \bm{E} +  \frac{\partial \bm{B}}{\partial t} &= \bm{0}, \label{eq:maxwell_multilabels2} \\
-    \nabla\cdot \bm{B} & = 0, \label{eq:maxwell_multilabels3} \\
-    \nabla \times \bm{H} - \frac{\partial \bm{D}}{\partial t} &= \bm{J} \label{eq:maxwell_multilabels4}.
-\end{align}
-
-Equation~\eqref{eq:maxwell_singlelabel} is the same as before,
-but with just one label:
-\begin{equation}
-    \label{eq:maxwell_singlelabel}
-    \left\{
-    \begin{aligned}
-    \nabla\cdot \bm{D} & = \rho, \\
-    \nabla \times \bm{E} +  \frac{\partial \bm{B}}{\partial t} &= \bm{0},\\
-    \nabla\cdot \bm{B} & = 0, \\
-    \nabla \times \bm{H} - \frac{\partial \bm{D}}{\partial t} &= \bm{J}.
-    \end{aligned}
-    \right.
-\end{equation}
-
-%-----------------------------------------------------------------------------
-% FIGURES, TABLES AND ALGORITHMS
-%-----------------------------------------------------------------------------
-\section{Figures, Tables and Algorithms}
-
-Figures, Tables and Algorithms have to contain a Caption that describes their content, and have to be properly referred in the text.
-
-\subsection{Figures}
-\label{subsec:figures}
-
-For including pictures in your text you can use \texttt{TikZ} for high-quality hand-made figures \cite{tikz},
-or just include them with the command
-\begin{verbatim}
-\includegraphics[options]{filename.xxx}
-\end{verbatim}
-Here xxx is the correct format, e.g.  \verb|.png|, \verb|.jpg|, \verb|.eps|, \dots.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.3\textwidth]{logo_polimi_scritta.eps}
-    \caption{Caption of the Figure.}
-    \label{fig:quadtree}
-\end{figure}
-
-Thanks to the \texttt{\textbackslash subfloat} command, a single figure, such as Figure~\ref{fig:quadtree},
-can contain multiple sub-figures with their own caption and label, e.g. Figure~\ref{fig:polimi_logo1} and Figure~\ref{fig:polimi_logo2}. 
-
-\begin{figure}[H]
-    \centering
-    \subfloat[One PoliMi logo.\label{fig:polimi_logo1}]{
-        \includegraphics[scale=0.5]{images/logo_polimi_scritta.eps}
-    }
-    \quad
-    \subfloat[Another one PoliMi logo.\label{fig:polimi_logo2}]{
-        \includegraphics[scale=0.5]{images/logo_polimi_scritta2.eps}
-    }
-    \caption[]{Caption of the Figure.}
-    \label{fig:quadtree2}
-\end{figure}
-
-\subsection{Tables}
-\label{subsec:tables}
-
-Within the environments \texttt{table} and  \texttt{tabular} you can create very fancy tables as the one shown in Table~\ref{table:example}.
-
-\begin{table}[H]
-    \caption*{\textbf{Example of Table (optional)}}
-    \centering 
-    \begin{tabular}{|p{3em} c c c |}
-    \hline
-    \rowcolor{bluePoli!40}
-     & \textbf{column1} & \textbf{column2} & \textbf{column3} \T\B \\
-    \hline \hline
-    \textbf{row1} & 1 & 2 & 3 \T\B \\
-    \textbf{row2} & $\alpha$ & $\beta$ & $\gamma$ \T\B\\
-    \textbf{row3} & alpha & beta & gamma \B\\
-    \hline
-    \end{tabular}
-    \\[10pt]
-    \caption{Caption of the Table.}
-    \label{table:example}
-\end{table}
-
-You can also consider to highlight selected columns or rows in order to make tables more readable.
-Moreover, with the use of \texttt{table*} and the option \texttt{bp} it is possible to align them at the bottom of the page. One example is presented in Table~\ref{table:exampleC}. 
-
-\begin{table*}[bp]
-\centering 
-    \begin{tabular}{|p{3em} | c | c | c | c | c | c|}
-    \hline
-%    \rowcolor{bluePoli!40}
-     & \textbf{column1} & \textbf{column2} & \textbf{column3} & \textbf{column4} & \textbf{column5} & \textbf{column6} \T\B \\
-    \hline \hline
-    \textbf{row1} & 1 & 2 & 3 & 4 & 5 & 6 \T\B\\
-    \textbf{row2} & a & b & c & d & e & f \T\B\\
-    \textbf{row3} & $\alpha$ & $\beta$ & $\gamma$ & $\delta$ & $\phi$ & $\omega$ \T\B\\
-    \textbf{row4} & alpha & beta & gamma & delta & phi & omega \B\\
-    \hline
-    \end{tabular}
-    \\[10pt]
-    \caption{Highlighting the columns}
-    \label{table:exampleC}
-\end{table*}
-
-\subsection{Algorithms}
-\label{subsec:algorithms}
-
-Pseudo-algorithms can be written in \LaTeX{} with the \texttt{algorithm} and \texttt{algorithmic} packages.
-An example is shown in Algorithm~\ref{alg:var}.
-\begin{algorithm}[H]
-\label{alg:example}
-\caption{Name of the Algorithm}
-\label{alg:var}
-\label{protocol1}
-\begin{algorithmic}[1]
-\STATE Initial instructions
-\FOR{$for-condition$}
-\STATE{Some instructions}
-\IF{$if-condition$}
-\STATE{Some other instructions}
-\ENDIF
-\ENDFOR
-\WHILE{$while-condition$}
-\STATE{Some further instructions}
-\ENDWHILE
-\STATE Final instructions
-\end{algorithmic}
-\end{algorithm} 
-
-\section{Some further useful suggestions}
-
-Theorems have to be formatted as follows:
-\begin{theorem}
-\label{a_theorem}
-Write here your theorem. 
-\end{theorem}
-\textit{Proof.} If useful you can report here the proof.
-\vspace{0.3cm} % Insert vertical space
-
-Propositions have to be formatted as follows:
-\begin{proposition}
-Write here your proposition.
-\end{proposition}
-\vspace{0.3cm} % Insert vertical space
-
-How to insert itemized lists:
-\begin{itemize}
-    \item first item;
-    \item second item.
-\end{itemize}
-How to write numbered lists:
-\begin{enumerate}
-    \item first item;
-    \item second item.
-\end{enumerate}
-
-\section{Use of copyrighted material}
-
-Each student is responsible for obtaining copyright permissions, if necessary, to include published material in the thesis.
-This applies typically to third-party material published by someone else.
-
-\section{Plagiarism}
-
-You have to be sure to respect the rules on Copyright and avoid an involuntary plagiarism.
-It is allowed to take other persons' ideas only if the author and his original work are clearly mentioned.
-As stated in the Code of Ethics and Conduct, Politecnico di Milano \textit{promotes the integrity of research,
-condemns manipulation and the infringement of intellectual property}, and gives opportunity to all those
-who carry out research activities to have an adequate training on ethical conduct and integrity while doing research.
-To be sure to respect the copyright rules, read the guides on Copyright legislation and citation styles available
-at:
-\begin{verbatim}
-https://www.biblio.polimi.it/en/tools/courses-and-tutorials
-\end{verbatim}
-You can also attend the courses which are periodically organized on "Bibliographic citations and bibliography management".
-
-%-----------------------------------------------------------------------------
-% CONCLUSION
-%-----------------------------------------------------------------------------
-\section{Conclusions}
-\color{black}
-A final section containing the main conclusions of your research/study
-and possible future developments of your work have to be inserted in the section ``Conclusions''.
-
-\section{Bibliography and citations}
-Your thesis must contain a suitable Bibliography which lists all the sources consulted on developing the work.
-The list of references is placed at the end of the manuscript after the chapter containing the conclusions.
-It is suggested to use the BibTeX package and save the bibliographic references in the file \verb|bibliography.bib|.
-This is indeed a database containing all the information about the references. To cite in your manuscript, use the \verb|\cite{}| command as follows:
-\\
-\textit{Here is how you cite bibliography entries: \cite{knuth74}, or multiple ones at once: \cite{knuth92,lamport94}}.
-\\
-The bibliography and list of references are generated automatically by running BibTeX \cite{bibtex}.
 
 %-----------------------------------------------------------------------------
 % BIBLIOGRAPHY
 %-----------------------------------------------------------------------------
 \bibliography{bibliography.bib}
-
-\appendix
-\section{Appendix A}
-If you need to include an appendix to support the research in your thesis, you can place it at the end of the manuscript.
-An appendix contains supplementary material (figures, tables, data, codes, mathematical proofs, surveys, \dots)
-which supplement the main results contained in the previous sections.
-
-\section{Appendix B}
-It may be necessary to include another appendix to better organize the presentation of supplementary material.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%     ABSTRACT IN ITALIAN LANGUAGE AND ACKNOWLEDGMENTS     %%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\cleardoublepage
-
-%-----------------------------------------------------------------------------
-% SOMMARIO
-%-----------------------------------------------------------------------------
-\section*{Abstract in lingua italiana}
-Qui va l'Abstract in lingua italiana della tesi seguito dalla lista di parole chiave.
-\vspace{15pt}
-\begin{tcolorbox}[arc=0pt, boxrule=0pt, colback=bluePoli!60, width=\textwidth, colupper=white]
-    \textbf{Parole chiave:} qui, le parole chiave, della tesi, in italiano 
-\end{tcolorbox}
-
-%-----------------------------------------------------------------------------
-% ACKNOWLEDGEMENTS
-%-----------------------------------------------------------------------------
-\section*{Acknowledgements}
-Here you might want to acknowledge someone.
 
 %-------------------------------------------------------------------------
 %	END OF YOUR DOCUMENT

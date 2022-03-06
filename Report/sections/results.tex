@@ -3,6 +3,7 @@ With the help of a utility script, we collected frequencies in various configura
 In particular, we wanted to verify the best number of repetitions and evaluation time,
 in order to have a high reliability, but waiting a reasonable amount of
 time for the PUF response. \\
+
 \begin{itemize}
     \item TERO loop are expected to oscillate for a short period of time, then settle in a stable state.
     Using a too short evaluation time truncates the oscillation measurement: although the resulting read
@@ -15,11 +16,16 @@ time for the PUF response. \\
     (e.g., temporal fluctuations in the power supply). The latter type is not constant and can be
     averaged out. This approach has been used several times, as it has been proved to increase the reliability
     (as we verified via experiments).
-\end{itemize}
+\end{itemize}  
+
+\vspace{10pt}
+To compute reliability and uniqueness we used the formulas reported in \cite{Journal}, also used in the
+original TERO design \cite{tero_original}.
 
 \subsection{Evaluation time and Repetitions}
+\label{subsec:eval_and_repetitions}
 
-Using the data we collected, we got to the same conclusions of the paper: using more than $ 2^5 $
+Using the data we collected, we got to the same conclusions of the paper \cite{ref_pap}: using more than $ 2^5 $
 clock cycles for evaluation does not produce a distinguishable improvement in reliability nor uniqueness 
 (as this latter is little influenced by evaluation time). Instead, increasing the number of repetition
 from $ 1 $ to $ 2^{12} $ adds an extra $ 5\% $ to the reliability indicator (but slows the response time of the PUF). \\
