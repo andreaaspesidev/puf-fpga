@@ -4,6 +4,8 @@
 !Analysis/**
 !Report/**/*.tex
 !Report/**/*.eps
+!Report/**/*.png
+!Report/**/*.jpg
 !Report/**/*.bib
 !Report/report.pdf
 !*.xpr
