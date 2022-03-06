@@ -1,15 +1,19 @@
 \subsection{Architecture}
 \begin{figure}
     \centering
-    \includegraphics[scale=0.75]{TERO_loop.png}
-    \caption{TERO Loop structure}
-    \label{img:TERO_LOOP}
+    \subfloat[TERO loop structure \label{img:TERO_LOOP}]{
+        \includegraphics[scale=0.3]{TERO_loop.png}
+    }
+    \subfloat[2-stages counter \label{img:TERO_COUNTER}]{
+        \includegraphics[scale=0.4]{TERO_counter.png}
+    } 
+    \caption{Structure of TERO loop and 2-stages counter}
 \end{figure}
 The TERO PUF is composed of a variable number of TERO loops. Each of them is based on
 two AND gates and two inverters (see \textit{Figure~\ref{img:TERO_LOOP}}). \\
 The two inverters are cross-coupled and brought into an unstable state via AND gates. 
 While the loop tries to resolve the unstable state, it oscillates for a short time.
-The number of oscillation of each loop is counted using a two-stage counter.
+The number of oscillation of each loop is counted using a two-stages counter (see \textit{Figure~\ref{img:TERO_COUNTER}}).
 Combining the outcomes of the loops with a specific algorithm (see \textit{Section~\ref{sec:id_generation}}),
 we can obtain the overall response of the TERO PUF (ID of the FPGA). \\
 In an Artix7 Slice we can put two TERO loops (see \textit{Figure~\ref{img:TERO_CONNECTIONS}}), differing for the internal routing.
