@@ -1,6 +1,8 @@
 *
 !*/
 !Sources/**
+!Driver/src/**
+!Driver/Makefile
 !Analysis/**
 !Report/**/*.tex
 !Report/**/*.eps
