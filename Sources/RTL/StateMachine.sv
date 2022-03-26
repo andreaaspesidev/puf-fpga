@@ -91,18 +91,26 @@ module StateMachine #(
     // ---------------------------
     //   Select Tero Loop Number
     // ---------------------------
-    dummy_freq_cnt #( //Block to handle loop select counter
-                       .NUM_LOOPS(NUM_LOOPS),
-                       .CHALLENGE_BITS(CHALLENGE_BITS)
-                   )
-                   freq_cnt_inst (
-                       .clk (clk),
-                       .challenge_in(challenge),   // challenge number used to compute the tero loop sequence
-                       .increment(inc_TERO_cnt),   // command to be used to get the next tero loop number
-                       .reset(reset_TERO_cnt),     // reset signal, sets next_TERO at its initial value
-                       .next_TERO(TERO_cnt),       // calculated next tero loop number
-                       .done(TERO_cnt_done)        // asserted when last tero loop number for this challenge has been given
-                   );
+    //dummy_freq_cnt #( //Block to handle loop select counter
+    //                   .NUM_LOOPS(NUM_LOOPS),
+    //                   .CHALLENGE_BITS(CHALLENGE_BITS)
+    //               )
+    //               freq_cnt_inst (
+    //                   .clk(clk),
+    //                   .challenge_in(challenge),   // challenge number used to compute the tero loop sequence
+    //                   .increment(inc_TERO_cnt),   // command to be used to get the next tero loop number
+    //                   .reset(reset_TERO_cnt),     // reset signal, sets next_TERO at its initial value
+    //                   .next_TERO(TERO_cnt),       // calculated next tero loop number
+    //                   .done(TERO_cnt_done)        // asserted when last tero loop number for this challenge has been given
+    //               );
+    comp_freq_cnt freq_cnt_inst (
+        .clk(clk),
+        .challenge_in(challenge),   // challenge number used to compute the tero loop sequence
+        .increment(inc_TERO_cnt),   // command to be used to get the next tero loop number
+        .reset(reset_TERO_cnt),     // reset signal, sets next_TERO at its initial value
+        .next_TERO(TERO_cnt),       // calculated next tero loop number
+        .done(TERO_cnt_done)        // asserted when last tero loop number for this challenge has been given
+    );
 
     assign select_puf = TERO_cnt; //TERO cnt is hard wired to output select_puf port
 
