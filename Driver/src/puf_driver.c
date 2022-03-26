@@ -4,6 +4,8 @@
 #include <linux/slab.h>
 #include <linux/workqueue.h>
 
+#include <linux/fs.h>
+
 #include "ftdi_interface.h"
 
 MODULE_AUTHOR("Andrea Aspesi <andrea1.aspesi@mail.polimi.it>");
@@ -40,9 +42,18 @@ static struct usb_driver puf_driver = {
  * Entry-points
  * --------------------------------
  */
+// Prototypes
+static int init_character_device(void);
+static void destroy_character_device(void);
+
 static int __init puf_driver_init(void) {
     int result;
-    /* register this driver with the USB subsystem */
+    // Create character device setup
+    result = init_character_device();
+    if (!result){
+        return 1;
+    }
+    // Register this driver with the USB subsystem
     result = usb_register(&puf_driver);
     if (result)
         printk("usb_register failed. Error number %d", result);
@@ -51,8 +62,10 @@ static int __init puf_driver_init(void) {
 module_init(puf_driver_init);
 
 static void __exit puf_driver_exit(void) {
-    /* deregister this driver with the USB subsystem */
+    // Deregister this driver with the USB subsystem
     usb_deregister(&puf_driver);
+    // Deregister char device
+    destroy_character_device();
 }
 module_exit(puf_driver_exit);
 
@@ -69,8 +82,11 @@ static int check_wrong_endpoints(struct usb_interface *);
 static puf_data_t * init_driver_structure(struct usb_interface *, struct usb_device *);
 static void clear_driver_structure(struct usb_interface *);
 
-static int puf_valid(puf_data_t*);
+static int puf_auth(puf_data_t*);
 static int ask_frequencies(puf_data_t*, unsigned int);
+
+static int add_character_device(puf_data_t* data);
+static int remove_character_device(puf_data_t* data);
 
 
 static int puf_probe(struct usb_interface *interface, const struct usb_device_id *id) {
@@ -93,24 +109,33 @@ static int puf_probe(struct usb_interface *interface, const struct usb_device_id
     if (!data){
         return -ENOMEM;
     }
+    printk("[PUF Driver] Data allocated!\n");
     // Configure FTDI parameters
-    if (ftdi_setup_parameters(data, BAUD_9600, DATA_BITS_8, STOP_BITS_1, PARITY_NONE) == FTDI_ERROR){
+    if (ftdi_setup_parameters(data, BAUD_115200, DATA_BITS_8, STOP_BITS_1, PARITY_NONE) == FTDI_ERROR){
         clear_driver_structure(interface);
         return -ENODEV;
     }
+    printk("[PUF Driver] Port configured!\n");
     // Open serial port
     if (ftdi_open_port(data) == FTDI_ERROR) {
         clear_driver_structure(interface);
         return -ENODEV;
     }
+    printk("[PUF Driver] Port opened!\n");
     // Check if puf is valid
-    if (!puf_valid(data)){
+    if (!puf_auth(data)){
         clear_driver_structure(interface);
         return -ENODEV;
     }
-    // Ask frequencies
+    printk("[PUF Driver] PUF auth ok!\n");
+    // Register device pipe
+    if (!add_character_device(data)){
+        clear_driver_structure(interface);
+        return -EFAULT;
+    }
+    printk("[PUF Driver] Created device for this puf!\n");
+    // Ask first challenge
     ask_frequencies(data, 1);
-
     // Claim the device
     printk("[PUF Driver] Device claimed!\n");
     return 0;
@@ -118,8 +143,10 @@ static int puf_probe(struct usb_interface *interface, const struct usb_device_id
 
 static void puf_disconnect(struct usb_interface *interface) {
     // Cleanup
+    puf_data_t *data = usb_get_intfdata(interface);
+    remove_character_device(data);
     clear_driver_structure(interface);
-    printk("[PUF Driver] Device deattached!\n");
+    printk("[PUF Driver] Device detached!\n");
 }
 
 /**
@@ -128,8 +155,10 @@ static void puf_disconnect(struct usb_interface *interface) {
  */
 #define PUF_AUTH_REQUEST    '\xAA'
 #define PUF_AUTH_RESPONSE   '\xAB'
-static int puf_valid(puf_data_t* data){
+static int puf_auth(puf_data_t* data){
     char buff[2];
+    // Stop async receive
+    ftdi_stop_async_receive(data);
     // Send auth id
     buff[0] = PUF_AUTH_REQUEST;
     buff[1] = 0;
@@ -139,12 +168,11 @@ static int puf_valid(puf_data_t* data){
     ftdi_sync_receive(data, buff, 1, HZ*5);
     if (buff[0] == PUF_AUTH_RESPONSE){
         data->status = DRIVER_AUTH_OK;
-        printk("[PUF Driver] PUF detected!\n");
         return 1;
     }
-    printk("[PUF Driver] Wrong puf response\n");
     return 0;
 }
+
 
 static void get_2comp_indices(unsigned int challenge_num, int *i, int *j){
     // 0,1
@@ -171,6 +199,7 @@ static void get_2comp_indices(unsigned int challenge_num, int *i, int *j){
     *i = i_tmp;
     *j = j_tmp;
 }
+
 static void generate_response(puf_data_t* data) {
     // Start by grouping frequencies in batches.
     // In each batch, put frequencies coming from the same type of TERO loop (8 types)
@@ -194,14 +223,16 @@ static void generate_response(puf_data_t* data) {
     }
     printk("[PUF Driver] Grouped frequencies in batches\n");
     // Convert the challenge in the two compare indexes i,j for 2Comp
-    get_2comp_indices(data->selected_challenge, &i, &j);
+    data->response_challenge = data->selected_challenge;
+    get_2comp_indices(data->response_challenge, &i, &j);
     printk("[PUF Driver] Generating using i=%d, j=%d\n", i,j);
     // Generate unique id, by comparing for each batch the freq in position i and j
     for (curr_bit=0;curr_bit<BATCHES_NUM;++curr_bit){
         data->response_id[curr_bit] = (data->batches[curr_bit][i] > data->batches[curr_bit][j]) ? '1' : '0';
     }
     data->response_id[curr_bit] = '\0'; // Add the terminator
-    printk("[PUF Driver] Challenge: %d, Unique ID: %s\n", data->selected_challenge, data->response_id);
+    data->status = DRIVER_RESPONSE_OK;
+    printk("[PUF Driver] Challenge: %d, Unique ID: %s\n", data->response_challenge, data->response_id);
 }
 
 static void process_frequencies(struct work_struct *work){
@@ -225,13 +256,13 @@ static void process_frequencies(struct work_struct *work){
         data->freqs[i/4] |= data->freq_bytes[i+1]  << 2*8;
         data->freqs[i/4] |= data->freq_bytes[i+2]  << 1*8;
         data->freqs[i/4] |= data->freq_bytes[i+3];
-        printk("[PUF Freq #%d] %02x %02x %02x %02x: %d\n", 
-                i / 4, 
-                data->freq_bytes[i] & 0xff, 
-                data->freq_bytes[i+1] & 0xff, 
-                data->freq_bytes[i+2] & 0xff, 
-                data->freq_bytes[i+3] & 0xff, 
-                data->freqs[i/4]);
+        //printk("[PUF Freq #%d] %02x %02x %02x %02x: %d\n", 
+        //        i / 4, 
+        //        data->freq_bytes[i] & 0xff, 
+        //        data->freq_bytes[i+1] & 0xff, 
+        //        data->freq_bytes[i+2] & 0xff, 
+        //        data->freq_bytes[i+3] & 0xff, 
+        //        data->freqs[i/4]);
     }
     // Process frequencies
     generate_response(data);
@@ -249,7 +280,7 @@ void on_puf_data(puf_data_t* data){
     spin_lock_irqsave(&data->data_lock, flags);
         bytes_received = kfifo_len(&data->data_fifo);
     spin_unlock_irqrestore(&data->data_lock, flags);
-    printk("[PUF Driver] FIFO_SIZE: %d\n", bytes_received);
+    //printk("[PUF Driver] FIFO_SIZE: %d\n", bytes_received);
     // Is all the data arrived?
     if (bytes_received == PUF_FREQUENCIES*4){
         data->status = DRIVER_PROCESSING_FREQS;
@@ -260,6 +291,7 @@ void on_puf_data(puf_data_t* data){
         printk("[PUF Driver] Scheduled frequencies processing\n");
     }
 }
+
 static int ask_frequencies(puf_data_t* data, unsigned int challenge) {
     unsigned long flags;
     char buff[2];
@@ -278,6 +310,23 @@ static int ask_frequencies(puf_data_t* data, unsigned int challenge) {
     printk("[PUF Driver] Waiting frequencies\n");
     return 0;
 }
+
+static int puf_regenerate_frequencies(puf_data_t* data, unsigned int challenge) {
+    // Check not already started
+    if (data->status != DRIVER_RESPONSE_OK){
+        printk("[PUF Driver] Cannot restart the sequence from this state");
+        return 0;
+    }
+    // First auth again
+    if (!puf_auth(data)){
+        printk("[PUF Driver] PUF auth failed");
+        return 0;
+    }
+    // Then request freqs
+    ask_frequencies(data, challenge);
+    return 1;
+}
+
 
 /**
  * Hardware checks
@@ -330,6 +379,8 @@ static puf_data_t * init_driver_structure(struct usb_interface *interface, struc
 		return 0;
 	}
     data->status = DRIVER_INITIALIZING;
+    data->response_challenge = -1;
+    spin_lock_init(&data->lock);
     // Save a reference to this usb device struct
 	data->udev = usb_get_dev(udev);  // increments the reference count of the usb device structure
     // Init FTDI interface
@@ -353,3 +404,132 @@ static void clear_driver_structure(struct usb_interface *interface) {
     kfree(data);
 }
 
+/**
+ * Character devices
+ * Based on: 
+ * - https://linux-kernel-labs.github.io/refs/heads/master/labs/device_drivers.html
+ * - https://olegkutkov.me/2018/03/14/simple-linux-character-device-driver/#:~:text=A%20character%20device%20is%20one,by%20byte%2C%20like%20a%20stream.
+ * --------------------------------
+ */
+// Defines
+#define MAJOR_NUM 200
+#define BASE_NAME "teropuf"
+#define SUPPORTED_DEVICES 100
+
+// Static vars
+DEFINE_SPINLOCK(puf_lock);               // Create a new unlocked spinlock
+static struct class *tero_class = NULL;     // Char device class
+static int last_used_minor = -1;            // Last used minor
+
+// Prototypes
+static int tero_open(struct inode *, struct file *);
+static int tero_release(struct inode *, struct file *);
+static ssize_t tero_read(struct file *, char __user *, size_t , loff_t *);
+static ssize_t tero_write(struct file *, const char __user *, size_t , loff_t *);
+
+static const struct file_operations tero_fops = {
+    .owner          = THIS_MODULE,
+    .open           = tero_open,
+    .release        = tero_release,
+    .read           = tero_read,
+    .write          = tero_write
+};
+
+static int init_character_device(void) {
+    int result;
+    // Allocate region
+    result = register_chrdev_region(MKDEV(MAJOR_NUM, 0), SUPPORTED_DEVICES, BASE_NAME);
+    if (result != 0){
+        return 0;
+    }
+    // Prepare sysfs
+    tero_class = class_create(THIS_MODULE, BASE_NAME);
+    if (!tero_class){
+        return 0;
+    }
+    return 1;
+}
+
+static void destroy_character_device(void) {
+    // Remove class
+    class_unregister(tero_class);
+    class_destroy(tero_class);
+    // Remove allocated region
+    unregister_chrdev_region(MKDEV(MAJOR_NUM, 0), SUPPORTED_DEVICES);
+}
+
+static int add_character_device(puf_data_t* data) {
+    // Init the device, linking the function pointers
+    cdev_init(&data->cdev, &tero_fops);
+    // Add the device
+    data->minor = ++last_used_minor;
+    cdev_add(&data->cdev, MKDEV(MAJOR_NUM, data->minor), 1);
+    // Create sysfs device
+    device_create(tero_class, NULL, MKDEV(MAJOR_NUM, data->minor), NULL, "%s-%d", BASE_NAME, data->minor);
+    return 1;
+}
+
+static int remove_character_device(puf_data_t* data) {
+    // Remove sysfs device
+    device_destroy(tero_class, MKDEV(MAJOR_NUM, data->minor));
+    // Remove the device
+    cdev_del(&data->cdev);
+    return 1;
+}
+
+/*
+    Structures
+*/
+
+static int tero_open(struct inode *inode, struct file *file) {
+    puf_data_t* data;
+    // Retrieve puf context (as cdev is a variable of the structure)
+    data = container_of(inode->i_cdev, puf_data_t, cdev);
+    // Ref. the structure for easier access in the other methods
+    file->private_data = data;
+    return 0;
+}
+
+static int tero_release(struct inode *inode, struct file *file) {
+    file->private_data = NULL;
+    return 0;
+}
+
+static ssize_t tero_read(struct file *file, char __user *user_buffer, size_t size, loff_t *offset) {
+    puf_data_t* data;
+    // Get puf context
+    data = (puf_data_t*)file->private_data;
+    // Format of the string:    CHALLENGE_NUM RESPONSE_ID\0
+    // Check size
+    if (size < CHALLENGE_CHARS_SIZE + 1 + BATCHES_NUM + 2) {
+        return 0; // Not enough data requested, do not send a partial result id
+    }
+    // Check if a response is available
+    if (data->response_challenge == -1) {
+        return 0;
+    }
+    // Copy the response challenge
+    //printk("[->TERO CHANNEL]%d %s\n", data->response_challenge, data->response_id);
+    return scnprintf(user_buffer, size, "%d %s\n", data->response_challenge, data->response_id);
+}
+
+static ssize_t tero_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *offset) {
+    puf_data_t* data;
+    int ret;
+    unsigned int challenge = 0;
+    // Get puf context
+    data = (puf_data_t*)file->private_data;
+    // Convert number into challenge
+    ret = kstrtouint_from_user(user_buffer, count, 10, &challenge);
+    if (!ret){
+        // Valid number
+        if (challenge >= MIN_CHALLENGE && challenge <= MAX_CHALLENGE){
+            //printk("[<-TERO CHANNEL]%d\n", challenge);
+            // Ask for data
+            if (puf_regenerate_frequencies(data, challenge)){
+                return count;
+            }
+        }
+    }
+    return 0;
+}

@@ -2,11 +2,15 @@
 #include <linux/kfifo.h>
 #include <linux/kernel.h>
 #include <linux/usb.h>
+#include <linux/cdev.h>
 
 // Defines
 #define PUF_FREQUENCIES     1280
 #define LOOP_TYPES  8
 #define BATCHES_NUM 80
+#define MIN_CHALLENGE 0
+#define MAX_CHALLENGE 119
+#define CHALLENGE_CHARS_SIZE 3
 
 // Enums
 typedef enum PUF_DRIVER_STATUS {
@@ -15,19 +19,24 @@ typedef enum PUF_DRIVER_STATUS {
     DRIVER_AUTH_OK = 2,
     DRIVER_WAITING_FREQS = 3,
     DRIVER_PROCESSING_FREQS = 4,
-    DRIVER_ERROR = 5
+    DRIVER_RESPONSE_OK = 5,
+    DRIVER_ERROR = 6
 } PUF_DRIVER_STATUS;
 
 // Structures
 typedef struct puf_data {
     /* Driver status */
     PUF_DRIVER_STATUS status;                       // Driver FSM status
-    unsigned int selected_challenge;                // Active challenge
-    char response_id[BATCHES_NUM+1]; // Add 1 bit for the terminator
+    unsigned int selected_challenge;                // Current selected challenge
 
     /* Useful pointers */
     struct usb_device *	udev;
-    
+
+    /* Character device */
+    spinlock_t lock;                // Lock used to avoid sync problems between reading/writing data on this structure
+    struct cdev cdev;               // Structure used for the associated character device
+    unsigned int minor;             // Minor number assigned to this device
+
     /* Buffers for urbs */
     char * in_buffer;               // Buffer used for sync reading
     char * out_buffer;              // Buffer used for sync writing
@@ -44,4 +53,8 @@ typedef struct puf_data {
     unsigned char freq_bytes[PUF_FREQUENCIES*4];                    // Buffer for flushing the fifo data
     unsigned int freqs[PUF_FREQUENCIES];                            // Buffer for first conversion
     unsigned int batches[BATCHES_NUM][PUF_FREQUENCIES/BATCHES_NUM]; // Buffer for second conversion
+
+    /* PUF response */
+    int response_challenge;             // Challenge of the generated response (-1 when no response generated yet)
+    char response_id[BATCHES_NUM+1];    // Add 1 bit for the terminator
 } puf_data_t;
