@@ -78,10 +78,10 @@ static u32 ftdi_2232h_baud_base_to_divisor(int baud, int base) {
 	u32 divisor;
 	int divisor3;
 
-	/* hi-speed baud rate is 10-bit sampling instead of 16-bit */
-	divisor3 = DIV_ROUND_CLOSEST(8 * base, 10 * baud);
+	/* As freq = 120Mhz, seems a prescaler exists to have base = 12Mhz. So / 10 the current base */
+	divisor3 = DIV_ROUND_CLOSEST(8 * base, 10 * baud); // (12 000 000 * 8) / baud to keep the first 3 decimal bits in the integer part
 
-	divisor = divisor3 >> 3;
+	divisor = divisor3 >> 3; // Recover the actual division, truncated (int division)
 	divisor |= (u32)divfrac[divisor3 & 0x7] << 14;
 	/* Deal with special cases for highest baud rates. */
 	if (divisor == 1)		/* 1.0 */
@@ -89,7 +89,6 @@ static u32 ftdi_2232h_baud_base_to_divisor(int baud, int base) {
 	else if (divisor == 0x4001)	/* 1.5 */
 		divisor = 1;
 	/*
-	 * Set this bit to turn off a divide by 2.5 on baud rate generator
 	 * This enables baud rates up to 12Mbaud but cannot reach below 1200
 	 * baud with this bit set
 	 */
@@ -98,11 +97,21 @@ static u32 ftdi_2232h_baud_base_to_divisor(int baud, int base) {
 }
 static u32 ftdi_232bm_baud_base_to_divisor(int baud, int base) {
 	static const unsigned char divfrac[8] = { 0, 3, 2, 4, 1, 5, 6, 7 };
+    /*
+        000 = 0.0​      (0)
+        011 = 0.125​    (3)
+        010 = 0.25     (2)​
+        100 = 0.375​    (4)
+        001 = 0.5​      (1)
+        101 = 0.625​    (5)
+        110 = 0.75​     (6)
+        111 = 0.875    (7)
+    */
 	u32 divisor;
 	/* divisor shifted 3 bits to the left */
-	int divisor3 = DIV_ROUND_CLOSEST(base, 2 * baud);
-	divisor = divisor3 >> 3;
-	divisor |= (u32)divfrac[divisor3 & 0x7] << 14;
+	int divisor3 = DIV_ROUND_CLOSEST(base, 2 * baud); // (12 000 000 / 2) / baud = 12 000 000 / (2*baud)
+	divisor = divisor3 >> 3;    // = / 8, division of base by 16 at the end of this line
+	divisor |= (u32)divfrac[divisor3 & 0x7] << 14;  // Divisor 3 is used to extract the fractional bits
 	/* Deal with special cases for highest baud rates. */
 	if (divisor == 1)		/* 1.0 */
 		divisor = 0;
