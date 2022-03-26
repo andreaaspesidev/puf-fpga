@@ -112,7 +112,7 @@ module comp_freq_cnt (
     always @(posedge(clk)) 
     begin
         if (reset == 1'b1) begin
-            k = '0;
+            k = 4'd1;   // As the first value was already in output
             l = '0;
             i_active = 1;
             done = 0;
@@ -120,19 +120,19 @@ module comp_freq_cnt (
         else if (increment == 1'b1 && done == 1'b0 && challenge_valid == 1'b1) begin
             k = k+1;
         end
-        if (l == 4'd8) begin
-            if (i_active == 1'b0) begin
-                done = 1;
-            end
-            else begin
-                i_active = 0;
-                k = '0;
-                l = '0;
-            end
-        end
-        else if (k == 4'd10) begin
+        if (k == 4'd10) begin
             k = '0;
             l = l + 1;
+            if (l == 4'd8) begin
+                if (i_active == 1'b0) begin
+                    done = 1;
+                end
+                else begin
+                    i_active = 0;
+                    k = '0;
+                    l = '0;
+                end
+            end
         end
     end
 endmodule

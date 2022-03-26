@@ -49,14 +49,14 @@ module tb_CompFreq;
         @(posedge(clk));
         
         repeat (170) begin
-          increment = 1;
-          @(posedge(clk));
-          increment = 0;
-          @(posedge(clk));
           if (nextT != challenge14_freqs[count]) begin
             $display("[%d] %d %d\n", count, challenge14_freqs[count], nextT);
             $finish;
           end
+          increment = 1;
+          @(posedge(clk));
+          increment = 0;
+          @(posedge(clk));
           count = count + 1;
         end
         
@@ -68,14 +68,14 @@ module tb_CompFreq;
         @(posedge(clk));
         
         repeat (170) begin
-          increment = 1;
-          @(posedge(clk));
-          increment = 0;
-          @(posedge(clk));
           if (nextT != challenge14_freqs[count]) begin
             $display("[%d] %d %d\n", count, challenge14_freqs[count], nextT);
             $finish;
           end
+          increment = 1;
+          @(posedge(clk));
+          increment = 0;
+          @(posedge(clk));
           count = count + 1;
         end
         
@@ -88,14 +88,14 @@ module tb_CompFreq;
         @(posedge(clk));
         
         repeat (170) begin
-          increment = 1;
-          @(posedge(clk));
-          increment = 0;
-          @(posedge(clk));
           if (nextT != challenge58_freqs[count]) begin
             $display("[%d] %d %d\n", count, challenge58_freqs[count], nextT);
             $finish;
           end
+          increment = 1;
+          @(posedge(clk));
+          increment = 0;
+          @(posedge(clk));
           count = count + 1;
         end
         
@@ -108,14 +108,14 @@ module tb_CompFreq;
         @(posedge(clk));
         
         repeat (170) begin
-          increment = 1;
-          @(posedge(clk));
-          increment = 0;
-          @(posedge(clk));
           if (nextT != challenge61_freqs[count]) begin
             $display("[%d] %d %d\n", count, challenge61_freqs[count], nextT);
             $finish;
           end
+          increment = 1;
+          @(posedge(clk));
+          increment = 0;
+          @(posedge(clk));
           count = count + 1;
         end
         

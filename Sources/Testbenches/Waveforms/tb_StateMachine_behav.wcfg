@@ -11,13 +11,13 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="905200fs"></ZoomStartTime>
-      <ZoomEndTime time="1146601fs"></ZoomEndTime>
-      <Cursor1Time time="965000fs"></Cursor1Time>
+      <ZoomStartTime time="34677502fs"></ZoomStartTime>
+      <ZoomEndTime time="35259503fs"></ZoomEndTime>
+      <Cursor1Time time="505000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="276"></NameColumnWidth>
-      <ValueColumnWidth column_width="104"></ValueColumnWidth>
+      <ValueColumnWidth column_width="100"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="19" />
    <wvobject fp_name="divider30" type="divider">
@@ -41,8 +41,8 @@
       <obj_property name="ObjectShortName">start</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb_StateMachine/challenge">
-      <obj_property name="ElementShortName">challenge[3:0]</obj_property>
-      <obj_property name="ObjectShortName">challenge[3:0]</obj_property>
+      <obj_property name="ElementShortName">challenge[7:0]</obj_property>
+      <obj_property name="ObjectShortName">challenge[7:0]</obj_property>
    </wvobject>
    <wvobject fp_name="divider32" type="divider">
       <obj_property name="label">DUT outputs</obj_property>
@@ -57,8 +57,9 @@
       <obj_property name="ObjectShortName">reset_puf</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb_StateMachine/select_puf">
-      <obj_property name="ElementShortName">select_puf[2:0]</obj_property>
-      <obj_property name="ObjectShortName">select_puf[2:0]</obj_property>
+      <obj_property name="ElementShortName">select_puf[11:0]</obj_property>
+      <obj_property name="ObjectShortName">select_puf[11:0]</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/tb_StateMachine/enable_puf">
       <obj_property name="ElementShortName">enable_puf</obj_property>
@@ -107,8 +108,8 @@
          <obj_property name="ObjectShortName">reset_TERO_cnt</obj_property>
       </wvobject>
       <wvobject type="array" fp_name="/tb_StateMachine/StateMachine_dut/TERO_cnt">
-         <obj_property name="ElementShortName">TERO_cnt[2:0]</obj_property>
-         <obj_property name="ObjectShortName">TERO_cnt[2:0]</obj_property>
+         <obj_property name="ElementShortName">TERO_cnt[11:0]</obj_property>
+         <obj_property name="ObjectShortName">TERO_cnt[11:0]</obj_property>
       </wvobject>
    </wvobject>
    <wvobject type="group" fp_name="group38">

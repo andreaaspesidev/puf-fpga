@@ -3,12 +3,12 @@
 module tb_StateMachine;
 
   // Parameters
-  localparam  NUM_LOOPS = 4;
+  localparam  NUM_LOOPS = 1280;
   localparam  REPETITIONS_BITS = 16;
   localparam  REPETITIONS = 2;
   localparam  EVAL_TIME_BITS = 16;
   localparam  EVAL_TIME = 8;
-  localparam  CHALLENGE_BITS = 4;
+  localparam  CHALLENGE_BITS = 8;
 
   localparam RESET_CYCLES = 20;
 
@@ -16,7 +16,7 @@ module tb_StateMachine;
   reg clk = 0;
   reg reset = 0;
   reg start = 0;
-  reg [CHALLENGE_BITS-1:0] challenge = 0;
+  reg [CHALLENGE_BITS-1:0] challenge = 14;
   wire done;
   wire reset_puf;
   wire [$clog2(NUM_LOOPS-1):0] select_puf;
