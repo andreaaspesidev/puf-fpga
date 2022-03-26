@@ -74,8 +74,8 @@ def compute_reliability(data, name, output_file):
     save_csv(reliabilities, output_file)
 
 # Read data
-RESPONSE_PATH = Path("Analysis/Data/TERO_AP/responses")
-OUTPUT_FILE = Path("Analysis/reliabilities_TERO_AP.csv")
+RESPONSE_PATH = Path("Analysis/Data/TERO_AA/responses")
+OUTPUT_FILE = Path("Analysis/reliabilities_TERO_AA.csv")
 for csv_name in natural_sort(os.listdir(RESPONSE_PATH)):
     experiment_name = re.search(r'responses_([\w_]+)\.csv', csv_name)[1]
     data = read_csv(str(RESPONSE_PATH / csv_name))

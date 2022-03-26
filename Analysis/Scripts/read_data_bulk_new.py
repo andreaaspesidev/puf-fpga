@@ -12,7 +12,7 @@ from pathlib import Path
 
 # General configuration
 READ_NUMBER = 100
-EXPERIMENT_SUFFIX = "_EVAL6_REP13"
+EXPERIMENT_SUFFIX = "_CHALLENGE"
 OUT_DIR = "Analysis/Data/TERO_AA"
 
 def i2b (i):
@@ -42,54 +42,11 @@ def save_csv(array, name):
             # write a row to the csv file
             writer.writerow(row)
 
-# -------------
-#   2 Comp 
-# -------------
-CHALLENGE_TO_PARAMS = []
-def generate_challenge_to_params():
-    # 0,1
-    # ...
-    # 0,15
-    # 1,2
-    # ...
-    # 1,15
-    # ...
-    # 14,15
-    for i in range(0, 16):
-        for j in range(i+1, 16):
-            CHALLENGE_TO_PARAMS.append([i,j])
-
-def group_frequencies(freqs):
-    freqs = np.array(freqs, dtype=np.int)
-    # Based on the assumption we have 8 different cell types, we group each type in the right column
-    NUM_INSTANCES = freqs.shape[0]  # 1280
-    NUM_TYPES = 8
-    BATCH_SIZE = 16
-    batchArray = np.zeros((int(NUM_INSTANCES/NUM_TYPES),NUM_TYPES))
-    for instance_type in range(0, NUM_TYPES):
-        batchArray[:,instance_type] = freqs[instance_type::NUM_TYPES] # from the starting index, we sample every 8 elements
-    # batcharray: 160x8
-    BATCH_COLUMNS = int(NUM_INSTANCES/BATCH_SIZE)   # 80
-    fpgaBatch = np.zeros((BATCH_SIZE, BATCH_COLUMNS))
-    col = 0
-    for instance_type in range(0,NUM_TYPES):
-        # get old column
-        current_col = batchArray[:,instance_type]
-        # create 10 new columns
-        for index in range(0, len(current_col), BATCH_SIZE):
-            fpgaBatch[:,col] = current_col[index:index+BATCH_SIZE]
-            col += 1
-        # continue for each of the 8 columns (8x10 = 80 columns)
-    # set the new batch
-    return fpgaBatch
-
-def generate_unique_id(i,j, grouped_frequencies):
-    assert i!=j
-    NUM_BATCHES = grouped_frequencies.shape[1]
-    response = np.zeros((NUM_BATCHES))
-    for currBatch in range (0,NUM_BATCHES): #num of batches
-            response[currBatch] = grouped_frequencies[i,currBatch] > grouped_frequencies[j,currBatch]
-    return response # 80 bit
+def calc_response(frequencies):
+    half = int(len(frequencies)/2)
+    start = frequencies[0:half]
+    end = frequencies[half:]
+    return [start[i] > end[i] for i in range(0, half)]
 
 def bit_array_to_string(arr):
     response_char = ''
@@ -100,6 +57,8 @@ def bit_array_to_string(arr):
 # -------------
 #   Code 
 # -------------
+challenge_num = 0
+responses = []
 def evaluation():
     # Define and open port
     serial_port = serial.Serial(port='/dev/ttyUSB1', 
@@ -108,10 +67,10 @@ def evaluation():
                                 parity=serial.PARITY_NONE, 
                                 stopbits=serial.STOPBITS_ONE)
     # Params
-    NUM_LOOPS = 1280
+    NUM_LOOPS = 160
     AUTH_ID = i2b(0b10101010)
     AUTH_RESPONSE = i2b(0b10101011)
-    CHALLENGE = i2b(0b00000000)
+    CHALLENGE = i2b(challenge_num) # 14
 
     # Send Auth request
     print("-----------------------------")
@@ -145,7 +104,7 @@ def evaluation():
         print("-------- STATISTICS ---------")
         print("-----------------------------")
         # Save frequencies to a file
-        save_csv(frequencies, 'frequencies.csv')
+        #save_csv(frequencies, 'frequencies.csv')
         # Compute statistics
         max = np.max(frequencies)
         max_bits = np.math.ceil(np.math.log2(max))
@@ -154,29 +113,21 @@ def evaluation():
         print("-----------------------------")
         print("------ IDENTIFICATION -------")
         print("-----------------------------")
-        # Split frequencies
-        gfreqs = group_frequencies(frequencies)
-        print(f"Available challenges: {len(CHALLENGE_TO_PARAMS)}")
-        responses = []
-        for challenge_num in range(0,len(CHALLENGE_TO_PARAMS)):
-            # Generate id
-            unique_id = generate_unique_id(CHALLENGE_TO_PARAMS[challenge_num][0],
-                                           CHALLENGE_TO_PARAMS[challenge_num][1],
-                                           gfreqs)
-            unique_id_str = bit_array_to_string(unique_id)
-            responses.append(unique_id_str)
-            print(f"[CHALLENGE #{challenge_num}] Unique ID: {unique_id_str}")
-        save_csv(responses, 'responses.csv')
+        # Generate ID
+        unique_id = calc_response(frequencies)
+        unique_id_str = bit_array_to_string(unique_id)
+        responses.append(unique_id_str)
     else:
         print("Auth failed!")
 
 
 
-# Generate challenges mapping
-generate_challenge_to_params()
-
 # Run evaluation
 while READ_NUMBER > 0:
-    evaluation()
+    responses = []
+    for i in range(0, 120):
+        challenge_num = i
+        evaluation()
     READ_NUMBER = READ_NUMBER - 1
+    save_csv(responses, f'responses.csv')
     print(f"Missing {READ_NUMBER} repetitions!!")
