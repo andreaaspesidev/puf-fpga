@@ -22,7 +22,7 @@ module uart#(
     wire reset_n;
 
     // Local parameters
-    localparam BIT_RATE = 9600;
+    localparam BIT_RATE = 115200; //9600;
     localparam STOP_BITS = 1;
     localparam CLOCK_HZ = 100_000_000;
 
