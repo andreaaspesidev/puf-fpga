@@ -5,9 +5,9 @@
 #include <linux/cdev.h>
 
 // Defines
-#define PUF_FREQUENCIES     1280
-#define LOOP_TYPES  8
-#define BATCHES_NUM 80
+#define PUF_FREQUENCIES     160
+//#define LOOP_TYPES  8
+#define BATCHES_NUM 80 // = PUF_FREQUENCIES / 2 in this case
 #define MIN_CHALLENGE 0
 #define MAX_CHALLENGE 119
 #define CHALLENGE_CHARS_SIZE 3
@@ -26,7 +26,7 @@ typedef enum PUF_DRIVER_STATUS {
 // Structures
 typedef struct puf_data {
     /* Driver status */
-    PUF_DRIVER_STATUS status;                       // Driver FSM status
+    atomic_t status;                       // Driver FSM status
     unsigned int selected_challenge;                // Current selected challenge
 
     /* Useful pointers */
@@ -52,7 +52,7 @@ typedef struct puf_data {
     struct work_struct worker_freqs;                                // Contains the data for controlling the worker
     unsigned char freq_bytes[PUF_FREQUENCIES*4];                    // Buffer for flushing the fifo data
     unsigned int freqs[PUF_FREQUENCIES];                            // Buffer for first conversion
-    unsigned int batches[BATCHES_NUM][PUF_FREQUENCIES/BATCHES_NUM]; // Buffer for second conversion
+    //unsigned int batches[BATCHES_NUM][PUF_FREQUENCIES/BATCHES_NUM]; // Buffer for second conversion
 
     /* PUF response */
     int response_challenge;             // Challenge of the generated response (-1 when no response generated yet)

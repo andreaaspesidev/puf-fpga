@@ -42,7 +42,8 @@
      * 
      * @return FTDI_OP_RESULT 
      */
-    FTDI_OP_RESULT ftdi_initialize(puf_data_t* data);
+    FTDI_OP_RESULT ftdi_initialize(puf_data_t* data, 
+                                   const unsigned int puf_frequencies);
 
     /**
      * @brief Clear structures used for FTDI
@@ -60,10 +61,10 @@
      * @return FTDI_OP_RESULT
      */
     FTDI_OP_RESULT ftdi_setup_parameters(puf_data_t* data, 
-                                        PUF_BAUDRATE baudrate, 
-                                        PUF_DATABITS data_bits, 
-                                        PUF_STOPBITS stop_bits, 
-                                        PUF_PARITY parity);
+                                         PUF_BAUDRATE baudrate, 
+                                         PUF_DATABITS data_bits, 
+                                         PUF_STOPBITS stop_bits, 
+                                         PUF_PARITY parity);
         
     /**
      * @brief Opens the port, clearing the FTDI buffers
@@ -81,9 +82,9 @@
      * @return FTDI_OP_RESULT 
      */
     FTDI_OP_RESULT ftdi_sync_send(puf_data_t* data, 
-                                char* buffer, 
-                                char length,
-                                unsigned int timeout);
+                                  char* buffer, 
+                                  char length,
+                                  unsigned int timeout);
     
     /**
      * @brief Block for timeout, while waiting for length data from the device.
@@ -96,9 +97,9 @@
      * @return FTDI_OP_RESULT Error if no data is arrived in the interval
      */
     FTDI_OP_RESULT ftdi_sync_receive(puf_data_t* data, 
-                                    char* buffer, 
-                                    char length, 
-                                    unsigned int timeout);
+                                     char* buffer, 
+                                     char length, 
+                                     unsigned int timeout);
     
     /**
      * @brief Enable async reception of data. Data is placed in the data_fifo.

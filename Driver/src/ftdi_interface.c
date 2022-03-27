@@ -8,7 +8,10 @@
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
 
-FTDI_OP_RESULT ftdi_initialize(puf_data_t* data) {
+FTDI_OP_RESULT ftdi_initialize(puf_data_t* data, const unsigned int puf_frequencies) {
+    unsigned int storable_per_page;
+    unsigned int needed_pages;
+
     // Init spinlock
     spin_lock_init(&data->data_lock);
     // Initialize writing buffer
@@ -30,8 +33,12 @@ FTDI_OP_RESULT ftdi_initialize(puf_data_t* data) {
 	}
     // Create read fifo
     // PAGE_SIZE = 4096 bytes
-    // 1280 int32 (4 bytes) ) 1280*4=5120 -> 2 pages (8192 bytes)
-    if (kfifo_alloc(&data->data_fifo, 2*PAGE_SIZE, GFP_KERNEL)) { // the number of elements in the fifo, this must be a power of 2
+    // 1280 int32 (4 bytes): 1280*4=5120 -> 2 pages (8192 bytes)
+    // 160  int32 (4 bytes):  160*4=640 -> 1 page (4096 bytes)
+    storable_per_page = PAGE_SIZE / 4; // 1024
+    needed_pages = DIV_ROUND_UP(puf_frequencies, storable_per_page);
+
+    if (kfifo_alloc(&data->data_fifo, needed_pages*PAGE_SIZE, GFP_KERNEL)) { // the number of elements in the fifo, this must be a power of 2
         kfree(data->out_buffer);
         kfree(data->in_buffer);
         kfree(data->in_async_buffer);
@@ -149,10 +156,10 @@ static FTDI_OP_RESULT set_baudrate(struct usb_device *udev, unsigned int baudrat
 }
 
 FTDI_OP_RESULT ftdi_setup_parameters(puf_data_t* data, 
-                                PUF_BAUDRATE baudrate, 
-                                PUF_DATABITS data_bits, 
-                                PUF_STOPBITS stop_bits, 
-                                PUF_PARITY parity) {
+                                     PUF_BAUDRATE baudrate, 
+                                     PUF_DATABITS data_bits, 
+                                     PUF_STOPBITS stop_bits, 
+                                     PUF_PARITY parity) {
     int result;
     u16 value;
     struct usb_device *udev = data->udev;
@@ -238,9 +245,9 @@ FTDI_OP_RESULT ftdi_open_port(puf_data_t* data) {
  * -----------------------
  */
 FTDI_OP_RESULT ftdi_sync_send(puf_data_t* data, 
-                        char* buffer, 
-                        char length,
-                        unsigned int timeout){
+                              char* buffer, 
+                              char length,
+                              unsigned int timeout){
     int retval;
     int buff_index, i;
     int scheduled_length, sent_length;
@@ -272,9 +279,9 @@ FTDI_OP_RESULT ftdi_sync_send(puf_data_t* data,
  */
 #define FTDI_RS_ERR_MASK (FTDI_RS_BI | FTDI_RS_PE | FTDI_RS_FE | FTDI_RS_OE)
 FTDI_OP_RESULT ftdi_sync_receive(puf_data_t* data, 
-                            char* buffer, 
-                            char length, 
-                            unsigned int timeout){
+                                 char* buffer, 
+                                 char length, 
+                                 unsigned int timeout){
     int retval;
     int read_length;
     int bytes_read, i;
