@@ -542,12 +542,13 @@ static int tero_release(struct inode *inode, struct file *file) {
 static ssize_t tero_read(struct file *file, char __user *user_buffer, size_t size, loff_t *offset) {
     puf_data_t* data;      
     int copied_bytes;
+    char tmp_buffer[DRIVER_RESPONSE_SIZE];
 
     // Get puf context
     data = (puf_data_t*)file->private_data;
     // Format of the string:    CHALLENGE_NUM RESPONSE_ID\0
     // Check size
-    if (size < CHALLENGE_CHARS_SIZE + 1 + BATCHES_NUM + 2) {
+    if (size < DRIVER_RESPONSE_SIZE) {
         return 0; // Not enough data requested, do not send a partial result id
     }
     // Check if a response is available
@@ -556,11 +557,18 @@ static ssize_t tero_read(struct file *file, char __user *user_buffer, size_t siz
         spin_unlock(&data->lock);
         return 0;
     }
-    // Copy the response challenge
-    //printk("[->TERO CHANNEL]%d %s\n", data->response_challenge, data->response_id);
-    copied_bytes = scnprintf(user_buffer, size, "%d %s\n", data->response_challenge, data->response_id);
+    // Create the response on the stack, as __copy_to_user can sleep
+    // and so we must release the spinlock before
+    copied_bytes = scnprintf(tmp_buffer, DRIVER_RESPONSE_SIZE, "%d %s\n", data->response_challenge, data->response_id);
     spin_unlock(&data->lock);
-    return copied_bytes;
+    // Copy the response challenge
+    // Size of the destination buffer was already checked before
+    //printk("[->TERO CHANNEL]%d %s\n", data->response_challenge, data->response_id);
+    if (!__copy_to_user(user_buffer, tmp_buffer, copied_bytes + 1)) {  // copy also the terminator \0
+        return copied_bytes + 1;
+    } else {
+        return 0;
+    }
 }
 
 static ssize_t tero_write(struct file *file, const char __user *user_buffer, size_t count, loff_t *offset) {

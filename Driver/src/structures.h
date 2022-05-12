@@ -5,12 +5,14 @@
 #include <linux/cdev.h>
 
 // Defines
-#define PUF_FREQUENCIES     160
+#define PUF_FREQUENCIES     160     // Number of frequencies coming from the device
 //#define LOOP_TYPES  8
-#define BATCHES_NUM 80 // = PUF_FREQUENCIES / 2 in this case
-#define MIN_CHALLENGE 0
-#define MAX_CHALLENGE 119
-#define CHALLENGE_CHARS_SIZE 3
+#define BATCHES_NUM 80              // = PUF_FREQUENCIES / 2 in this case
+#define MIN_CHALLENGE 0             // Minimum challenge number. Cannot be changed as hardcoded in the device
+#define MAX_CHALLENGE 119           // Maximum challenge number. Cannot be changed as hardcoded in the device
+#define CHALLENGE_CHARS_SIZE 3      // Maximum length of the challenge number converted to string (log_10(119) + 1)
+
+#define DRIVER_RESPONSE_SIZE    CHALLENGE_CHARS_SIZE + 1 + BATCHES_NUM + 2  // <challenge_num><space><challenge_response><new_line>\0
 
 // Enums
 typedef enum PUF_DRIVER_STATUS {
