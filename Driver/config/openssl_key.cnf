@@ -1,0 +1,25 @@
+# https://ubuntu.com/blog/how-to-sign-things-for-secure-boot
+# This definition stops the following lines choking if HOME isn't
+# defined.
+HOME                    = .
+RANDFILE                = $ENV::HOME/.rnd 
+[ req ]
+distinguished_name      = req_distinguished_name
+x509_extensions         = v3
+string_mask             = utf8only
+prompt                  = no
+
+[ req_distinguished_name ]
+countryName             = IT
+stateOrProvinceName     = Varese
+localityName            = Samarate
+0.organizationName      = andreaaspesi
+commonName              = Secure Boot Signing
+emailAddress            = andrea.aspesi.dev@gmail.com
+
+[ v3 ]
+subjectKeyIdentifier    = hash
+authorityKeyIdentifier  = keyid:always,issuer
+basicConstraints        = critical,CA:FALSE
+extendedKeyUsage        = codeSigning,1.3.6.1.4.1.311.10.3.6,1.3.6.1.4.1.2312.16.1.2
+nsComment               = "OpenSSL Generated Certificate"

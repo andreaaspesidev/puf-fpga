@@ -2,6 +2,9 @@
 !*/
 !Sources/**
 !Driver/src/**
+!Driver/examples/**/src/**
+!Driver/examples/**/Makefile
+!Driver/config/**
 !Driver/Makefile
 !Analysis/**
 !Report/**/*.tex

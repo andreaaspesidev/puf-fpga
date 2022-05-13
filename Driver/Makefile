@@ -28,8 +28,22 @@ clean:
 	$(MAKE) -C $(BUILDSYSTEM_DIR) M=$(PWD)/$(OUTPUT) clean
 	rm -rf $(OUTPUT)
 	
+generate-key:
+	openssl req -config $(PWD)/config/openssl_key.cnf \
+        -new -x509 -newkey rsa:2048 \
+        -nodes -days 36500 -outform DER \
+        -keyout "$(PWD)/MOK.priv" \
+        -out "$(PWD)/MOK.der"
+
+install-key:
+	sudo mokutil --import $(PWD)/MOK.der
+	echo "Reboot the system before proceding"
+
+sign:
+	kmodsign sha512 $(PWD)/MOK.priv $(PWD)/MOK.der $(PWD)/$(OUTPUT)/$(TARGET).ko
+
 load:
-	insmod $(PWD)/$(OUTPUT)/$(TARGET).ko
+	sudo insmod $(PWD)/$(OUTPUT)/$(TARGET).ko
 
 unload:
-	rmmod $(PWD)/$(OUTPUT)/$(TARGET).ko
+	sudo rmmod $(PWD)/$(OUTPUT)/$(TARGET).ko
