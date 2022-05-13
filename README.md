@@ -9,6 +9,6 @@ As target, we chose Basys3 boards from Digilent, shipped with Xilinx Artix-7 XC7
 
 The implementation is based on the one of the paper:
 >A Fair and Comprehensive Large-Scale Analysis of
-Oscillation-Based PUFs for FPGAs
-> -- <cite>Alexander Wild, Georg T. Becker, Tim Guneysu</cite>
+Oscillation-Based PUFs for FPGAs  
+> -- <cite>Alexander Wild, Georg T. Becker, Tim Guneysu</cite>  
 Published in 2017, available at https://ieeexplore.ieee.org/document/8056795
