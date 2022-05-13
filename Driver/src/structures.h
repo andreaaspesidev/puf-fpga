@@ -1,4 +1,5 @@
 #include <linux/spinlock.h>
+#include <linux/mutex.h>
 #include <linux/kfifo.h>
 #include <linux/kernel.h>
 #include <linux/usb.h>
@@ -29,13 +30,13 @@ typedef enum PUF_DRIVER_STATUS {
 typedef struct puf_data {
     /* Driver status */
     atomic_t status;                       // Driver FSM status
-    unsigned int selected_challenge;                // Current selected challenge
+    unsigned int selected_challenge;       // Current selected challenge
 
     /* Useful pointers */
     struct usb_device *	udev;
 
     /* Character device */
-    spinlock_t lock;                // Lock used to avoid sync problems between reading/writing data on this structure
+    struct mutex lock;                   // Lock used to avoid sync problems between reading/writing data on this structure
     struct cdev cdev;               // Structure used for the associated character device
     unsigned int minor;             // Minor number assigned to this device
 
@@ -54,7 +55,6 @@ typedef struct puf_data {
     struct work_struct worker_freqs;                                // Contains the data for controlling the worker
     unsigned char freq_bytes[PUF_FREQUENCIES*4];                    // Buffer for flushing the fifo data
     unsigned int freqs[PUF_FREQUENCIES];                            // Buffer for first conversion
-    //unsigned int batches[BATCHES_NUM][PUF_FREQUENCIES/BATCHES_NUM]; // Buffer for second conversion
 
     /* PUF response */
     int response_challenge;             // Challenge of the generated response (-1 when no response generated yet)

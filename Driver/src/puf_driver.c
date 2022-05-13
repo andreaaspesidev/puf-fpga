@@ -243,15 +243,15 @@ static void generate_response(puf_data_t* data) {
     int curr_bit;
 
     // Generate response
-    spin_lock(&data->lock);
-    data->response_challenge = data->selected_challenge;
-    for (curr_bit=0;curr_bit<BATCHES_NUM;++curr_bit){
-        data->response_id[curr_bit] = (data->freqs[curr_bit] > data->freqs[curr_bit + BATCHES_NUM]) ? '1' : '0';
-    }
-    data->response_id[curr_bit] = '\0'; // Add the terminator
-    printk("[PUF Driver] Challenge: %d, Unique ID: %s\n", data->response_challenge, data->response_id);
-    spin_unlock(&data->lock);
-    atomic_set(&data->status, DRIVER_RESPONSE_OK);
+    mutex_lock(&data->lock);
+        data->response_challenge = data->selected_challenge;
+        for (curr_bit=0;curr_bit<BATCHES_NUM;++curr_bit){
+            data->response_id[curr_bit] = (data->freqs[curr_bit] > data->freqs[curr_bit + BATCHES_NUM]) ? '1' : '0';
+        }
+        data->response_id[curr_bit] = '\0'; // Add the terminator
+        atomic_set(&data->status, DRIVER_RESPONSE_OK);
+        printk("[PUF Driver] Challenge: %d, Unique ID: %s\n", data->response_challenge, data->response_id);
+    mutex_unlock(&data->lock);
 }
 
 static void process_frequencies(struct work_struct *work){
@@ -295,20 +295,23 @@ void on_puf_data(puf_data_t* data){
     if (atomic_read(&data->status) != DRIVER_WAITING_FREQS){
         return; // Ignore data
     }
-    // Check fifo size
+    // Critical section useless in this case, but present
+    // to prevent possible future bugs. Currently the PUF do not
+    // send additional async data apart the one asked.
     spin_lock_irqsave(&data->data_lock, flags);
+        // Check fifo size.
         bytes_received = kfifo_len(&data->data_fifo);
+        //printk("[PUF Driver] FIFO_SIZE: %d\n", bytes_received);
+        // Is all the data arrived?
+        if (bytes_received == PUF_FREQUENCIES*4){
+            atomic_set(&data->status, DRIVER_PROCESSING_FREQS);
+            // Initialize work
+            INIT_WORK(&data->worker_freqs, process_frequencies);
+            // Schedule work
+            schedule_work(&data->worker_freqs);
+            printk("[PUF Driver] Scheduled frequencies processing\n");
+        }
     spin_unlock_irqrestore(&data->data_lock, flags);
-    //printk("[PUF Driver] FIFO_SIZE: %d\n", bytes_received);
-    // Is all the data arrived?
-    if (bytes_received == PUF_FREQUENCIES*4){
-        atomic_set(&data->status, DRIVER_PROCESSING_FREQS);
-        // Initialize work
-        INIT_WORK(&data->worker_freqs, process_frequencies);
-        // Schedule work
-        schedule_work(&data->worker_freqs);
-        printk("[PUF Driver] Scheduled frequencies processing\n");
-    }
 }
 
 static int ask_frequencies(puf_data_t* data, unsigned int challenge) {
@@ -332,19 +335,19 @@ static int ask_frequencies(puf_data_t* data, unsigned int challenge) {
 
 static int puf_regenerate_frequencies(puf_data_t* data, unsigned int challenge) {
     // Check not already started
-    spin_lock(&data->lock);
-    if (atomic_read(&data->status) != DRIVER_RESPONSE_OK){
-        spin_unlock(&data->lock);
-        printk("[PUF Driver] Cannot restart the sequence from this state");
-        return 0;
-    }
-    // First auth again
-    if (!puf_auth(data)){
-        spin_unlock(&data->lock);
-        printk("[PUF Driver] PUF auth failed");
-        return 0;
-    }
-    spin_unlock(&data->lock);    // Must unlock after data->status changes, or we could reenter multiple times
+    mutex_lock(&data->lock);
+        if (atomic_read(&data->status) != DRIVER_RESPONSE_OK){
+            mutex_unlock(&data->lock);
+            printk("[PUF Driver] Cannot restart the sequence from this state");
+            return 0;
+        }
+        // First auth again
+        if (!puf_auth(data)){
+            mutex_unlock(&data->lock);
+            printk("[PUF Driver] PUF auth failed");
+            return 0;
+        }
+    mutex_unlock(&data->lock);    // Must unlock after data->status changes, or we could reenter multiple times
     // Then request freqs
     ask_frequencies(data, challenge);
     return 1;
@@ -403,7 +406,7 @@ static puf_data_t * init_driver_structure(struct usb_interface *interface, struc
 	}
     atomic_set(&data->status, DRIVER_INITIALIZING);
     data->response_challenge = -1;
-    spin_lock_init(&data->lock);
+    mutex_init(&data->lock);
     // Save a reference to this usb device struct
 	data->udev = usb_get_dev(udev);  // increments the reference count of the usb device structure
     // Init FTDI interface
@@ -421,6 +424,7 @@ static puf_data_t * init_driver_structure(struct usb_interface *interface, struc
 static void clear_driver_structure(struct usb_interface *interface) {
     puf_data_t *data = usb_get_intfdata(interface);
     ftdi_stop_async_receive(data);
+    mutex_destroy(&data->lock);
     usb_set_intfdata (interface, NULL);
     usb_put_dev(data->udev);
     ftdi_destroy(data);
@@ -442,8 +446,8 @@ static void clear_driver_structure(struct usb_interface *interface) {
 // Static vars
 static struct class *tero_class = NULL;     // Char device class
 
-DEFINE_SPINLOCK(minor_lock);           // Lock used to protect the minor ops
-int minor_mask = 0;          // Mask used to find the next free minor number. Must have bits => SUPPORTED_DEVICES
+DEFINE_SPINLOCK(minor_lock);  // Lock used to protect the minor ops
+int minor_mask = 0;           // Mask used to find the next free minor number. Must have bits => SUPPORTED_DEVICES
 
 // Prototypes
 static int tero_open(struct inode *, struct file *);
@@ -459,6 +463,15 @@ static const struct file_operations tero_fops = {
     .write          = tero_write
 };
 
+static char *tero_devnode(struct device *dev, umode_t *mode) {
+        if (!mode)
+            return NULL;
+        // Read-write permission for root
+        // Read permission for everybody
+        *mode = 0664;
+        return NULL;
+}
+
 static int init_character_device(void) {
     int result;
     // Allocate region
@@ -471,6 +484,8 @@ static int init_character_device(void) {
     if (!tero_class){
         return 0;
     }
+    // Set permissions for the device
+    tero_class->devnode = tero_devnode;
     return 1;
 }
 
@@ -488,15 +503,15 @@ static int add_character_device(puf_data_t* data) {
     cdev_init(&data->cdev, &tero_fops);
     // Get the next minor
     spin_lock(&minor_lock);
-    //  The mask is used to get the lowest minor available
-    //  ... 0000 0000 0000 : ffs returns 0, set bit 0: |= 1 << 0, |= 1
-    //  ... 0000 0000 0001 : ffs returns 1, set bit 1: |= 1 << 1, |= 10             
-    //  ... 0000 0000 0011 : ffs returns 2, set bit 2: |= 1 << 2, |= 100
-    if (minor_mask == ~0UL){
-        return 0; // Operation failed, no more minors available
-    }
-    next_free_minor = ffz(minor_mask);  // returns the position of the first (least significant) bit unset in the word i. The least significant bit is position 0 and the most significant position is 31
-    minor_mask |= 1 << next_free_minor;
+        //  The mask is used to get the lowest minor available
+        //  ... 0000 0000 0000 : ffs returns 0, set bit 0: |= 1 << 0, |= 1
+        //  ... 0000 0000 0001 : ffs returns 1, set bit 1: |= 1 << 1, |= 10             
+        //  ... 0000 0000 0011 : ffs returns 2, set bit 2: |= 1 << 2, |= 100
+        if (minor_mask == ~0UL){
+            return 0; // Operation failed, no more minors available
+        }
+        next_free_minor = ffz(minor_mask);  // returns the position of the first (least significant) bit unset in the word i. The least significant bit is position 0 and the most significant position is 31
+        minor_mask |= 1 << next_free_minor;
     spin_unlock(&minor_lock);
     // Add the device
     data->minor = next_free_minor;
@@ -511,10 +526,10 @@ static int remove_character_device(puf_data_t* data) {
     device_destroy(tero_class, MKDEV(MAJOR_NUM, data->minor));
     // Free the minor used
     spin_lock(&minor_lock);
-    //  The corresponding bit was set in the mask, now unset
-    //  ... 0000 0000 0111: (bit 1 was set), &= ~(1 << minor), &= ~(1 << 1), &= ~(10), &= 1111 1111 1101
-    //  ... 0000 0000 0101: (bit 0 was set), &= ~(1 << minor), &= ~(1 << 0), &= ~(1), &= 1111 1111 1110
-    minor_mask &= ~(1 << data->minor);
+        //  The corresponding bit was set in the mask, now unset
+        //  ... 0000 0000 0111: (bit 1 was set), &= ~(1 << minor), &= ~(1 << 1), &= ~(10), &= 1111 1111 1101
+        //  ... 0000 0000 0101: (bit 0 was set), &= ~(1 << minor), &= ~(1 << 0), &= ~(1), &= 1111 1111 1110
+        minor_mask &= ~(1 << data->minor);
     spin_unlock(&minor_lock);
     // Remove the device
     cdev_del(&data->cdev);
@@ -552,15 +567,15 @@ static ssize_t tero_read(struct file *file, char __user *user_buffer, size_t siz
         return 0; // Not enough data requested, do not send a partial result id
     }
     // Check if a response is available
-    spin_lock(&data->lock);
-    if (data->response_challenge == -1) {
-        spin_unlock(&data->lock);
-        return 0;
-    }
-    // Create the response on the stack, as __copy_to_user can sleep
-    // and so we must release the spinlock before
-    copied_bytes = scnprintf(tmp_buffer, DRIVER_RESPONSE_SIZE, "%d %s\n", data->response_challenge, data->response_id);
-    spin_unlock(&data->lock);
+    mutex_lock(&data->lock);
+        if (data->response_challenge == -1) {
+            mutex_unlock(&data->lock);
+            return 0;
+        }
+        // Create the response on the stack, as __copy_to_user can sleep
+        // and so we must release the spinlock before
+        copied_bytes = scnprintf(tmp_buffer, DRIVER_RESPONSE_SIZE, "%d %s\n", data->response_challenge, data->response_id);
+    mutex_unlock(&data->lock);
     // Copy the response challenge
     // Size of the destination buffer was already checked before
     //printk("[->TERO CHANNEL]%d %s\n", data->response_challenge, data->response_id);
