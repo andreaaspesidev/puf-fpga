@@ -12,6 +12,8 @@ MODULE_AUTHOR("Andrea Aspesi <andrea1.aspesi@mail.polimi.it>");
 MODULE_DESCRIPTION("TERO PUF Driver");
 MODULE_LICENSE("GPL");
 
+#define DEBUG  0   // Turn off to avoid printing
+
 /**
  * Register driver for the device
  * --------------------------------
@@ -55,8 +57,10 @@ static int __init puf_driver_init(void) {
     }
     // Register this driver with the USB subsystem
     result = usb_register(&puf_driver);
+#if DEBUG
     if (result)
         printk("usb_register failed. Error number %d", result);
+#endif
     return result;
 }
 module_init(puf_driver_init);
@@ -109,35 +113,47 @@ static int puf_probe(struct usb_interface *interface, const struct usb_device_id
     if (!data){
         return -ENOMEM;
     }
+#if DEBUG
     printk("[PUF Driver] Data allocated!\n");
+#endif
     // Configure FTDI parameters
     if (ftdi_setup_parameters(data, BAUD_115200, DATA_BITS_8, STOP_BITS_1, PARITY_NONE) == FTDI_ERROR){
         clear_driver_structure(interface);
         return -ENODEV;
     }
+#if DEBUG
     printk("[PUF Driver] Port configured!\n");
+#endif
     // Open serial port
     if (ftdi_open_port(data) == FTDI_ERROR) {
         clear_driver_structure(interface);
         return -ENODEV;
     }
+#if DEBUG
     printk("[PUF Driver] Port opened!\n");
+#endif
     // Check if puf is valid
     if (!puf_auth(data)){
         clear_driver_structure(interface);
         return -ENODEV;
     }
+#if DEBUG
     printk("[PUF Driver] PUF auth ok!\n");
+#endif
     // Register device pipe
     if (!add_character_device(data)){
         clear_driver_structure(interface);
         return -EFAULT;
     }
+#if DEBUG
     printk("[PUF Driver] Created device for this puf!\n");
+#endif
     // Ask first challenge
     ask_frequencies(data, 0);
     // Claim the device
+#if DEBUG
     printk("[PUF Driver] Device claimed!\n");
+#endif
     return 0;
 }
 
@@ -146,7 +162,9 @@ static void puf_disconnect(struct usb_interface *interface) {
     puf_data_t *data = usb_get_intfdata(interface);
     remove_character_device(data);
     clear_driver_structure(interface);
+#if DEBUG
     printk("[PUF Driver] Device detached!\n");
+#endif
 }
 
 /**
@@ -250,7 +268,9 @@ static void generate_response(puf_data_t* data) {
         }
         data->response_id[curr_bit] = '\0'; // Add the terminator
         atomic_set(&data->status, DRIVER_RESPONSE_OK);
+#if DEBUG
         printk("[PUF Driver] Challenge: %d, Unique ID: %s\n", data->response_challenge, data->response_id);
+#endif
     mutex_unlock(&data->lock);
 }
 
@@ -260,7 +280,9 @@ static void process_frequencies(struct work_struct *work){
     int i;
     // Recover parent structure from work pointer (math on memory addresses)
     data = container_of(work, puf_data_t, worker_freqs);
+#if DEBUG
     printk("[PUF Driver] Begin processing frequencies\n");
+#endif
     spin_lock_irqsave(&data->data_lock, flags);
         // Move data to local buffer for direct access
         if (kfifo_out(&data->data_fifo, data->freq_bytes, PUF_FREQUENCIES*4) != PUF_FREQUENCIES*4) {
@@ -309,7 +331,9 @@ void on_puf_data(puf_data_t* data){
             INIT_WORK(&data->worker_freqs, process_frequencies);
             // Schedule work
             schedule_work(&data->worker_freqs);
+#if DEBUG
             printk("[PUF Driver] Scheduled frequencies processing\n");
+#endif
         }
     spin_unlock_irqrestore(&data->data_lock, flags);
 }
@@ -329,7 +353,9 @@ static int ask_frequencies(puf_data_t* data, unsigned int challenge) {
     buff[1] = 0;
     atomic_set(&data->status, DRIVER_WAITING_FREQS);
     ftdi_sync_send(data, buff, 1, HZ*5);
+#if DEBUG
     printk("[PUF Driver] Waiting frequencies\n");
+#endif
     return 0;
 }
 
@@ -338,13 +364,17 @@ static int puf_regenerate_frequencies(puf_data_t* data, unsigned int challenge) 
     mutex_lock(&data->lock);
         if (atomic_read(&data->status) != DRIVER_RESPONSE_OK){
             mutex_unlock(&data->lock);
+#if DEBUG
             printk("[PUF Driver] Cannot restart the sequence from this state");
+#endif
             return 0;
         }
         // First auth again
         if (!puf_auth(data)){
             mutex_unlock(&data->lock);
+#if DEBUG
             printk("[PUF Driver] PUF auth failed");
+#endif
             return 0;
         }
     mutex_unlock(&data->lock);    // Must unlock after data->status changes, or we could reenter multiple times
@@ -360,10 +390,13 @@ static int puf_regenerate_frequencies(puf_data_t* data, unsigned int challenge) 
  */
 static int check_puf_jtag(struct usb_interface *interface) {
     int ifnum = interface->cur_altsetting->desc.bInterfaceNumber;
+#if DEBUG    
     printk("[PUF Driver] Checking interface number: %d\n", ifnum);
-	
+#endif
     if (ifnum == 0) {
+#if DEBUG
 		printk("[PUF Driver] Ignoring interface reserved for JTAG\n");
+#endif
 		return 1;
 	}
     return 0;
@@ -375,13 +408,16 @@ static int check_wrong_chip_type(struct usb_device *udev) {
     return version != 0x0700; // FT2232H, Hi-speed - baud clock runs at 120MHz
 }
 static int check_wrong_endpoints(struct usb_interface *interface) {
-    struct usb_endpoint_descriptor *ep_desc;
     unsigned num_endpoints;
+#if DEBUG
+    struct usb_endpoint_descriptor *ep_desc;
 	unsigned i;
+#endif
 
 	num_endpoints = interface->cur_altsetting->desc.bNumEndpoints;
 	if (!num_endpoints)
 		return 1;
+#if DEBUG
 	for (i = 0; i < num_endpoints; ++i) {
 		ep_desc = &interface->cur_altsetting->endpoint[i].desc;
         printk("Endpoint [%d]: Max packet size %d, DirIN: %d, DirOUT: %d", 
@@ -390,6 +426,7 @@ static int check_wrong_endpoints(struct usb_interface *interface) {
             usb_endpoint_dir_in(ep_desc), 
             usb_endpoint_dir_out(ep_desc));
 	}
+#endif
     return 0;
 }
 
@@ -503,9 +540,9 @@ static int add_character_device(puf_data_t* data) {
     // Get the next minor
     spin_lock(&minor_lock);
         //  The mask is used to get the lowest minor available
-        //  ... 0000 0000 0000 : ffs returns 0, set bit 0: |= 1 << 0, |= 1
-        //  ... 0000 0000 0001 : ffs returns 1, set bit 1: |= 1 << 1, |= 10             
-        //  ... 0000 0000 0011 : ffs returns 2, set bit 2: |= 1 << 2, |= 100
+        //  ... 0000 0000 0000 : ffz returns 0, set bit 0: |= 1 << 0, |= 1
+        //  ... 0000 0000 0001 : ffz returns 1, set bit 1: |= 1 << 1, |= 10             
+        //  ... 0000 0000 0011 : ffz returns 2, set bit 2: |= 1 << 2, |= 100
         if (minor_mask == ~0UL){
             return 0; // Operation failed, no more minors available
         }
