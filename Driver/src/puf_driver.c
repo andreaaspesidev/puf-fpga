@@ -491,7 +491,6 @@ static int init_character_device(void) {
 
 static void destroy_character_device(void) {
     // Remove class
-    class_unregister(tero_class);
     class_destroy(tero_class);
     // Remove allocated region
     unregister_chrdev_region(MKDEV(MAJOR_NUM, 0), SUPPORTED_DEVICES);
