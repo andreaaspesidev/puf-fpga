@@ -12,7 +12,7 @@ MODULE_AUTHOR("Andrea Aspesi <andrea1.aspesi@mail.polimi.it>");
 MODULE_DESCRIPTION("TERO PUF Driver");
 MODULE_LICENSE("GPL");
 
-#define DEBUG  0   // Turn off to avoid printing
+#define DEBUG  1   // Turn off to avoid printing
 
 /**
  * Register driver for the device
