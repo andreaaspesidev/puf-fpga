@@ -2,6 +2,7 @@
 !*/
 !Sources/**
 !Driver/src/**
+!Driver/docs/**
 !Driver/examples/**/src/**
 !Driver/examples/**/Makefile
 !Driver/config/**
