@@ -65,7 +65,7 @@ void ftdi_destroy(puf_data_t* data){
     data->in_urb = NULL;
     // Free fifo content
     spin_lock_irqsave(&data->data_lock, flags);
-	kfifo_reset_out(&data->data_fifo);
+	    kfifo_reset_out(&data->data_fifo);
 	spin_unlock_irqrestore(&data->data_lock, flags);
     // Free fifo
     kfifo_free(&data->data_fifo);
