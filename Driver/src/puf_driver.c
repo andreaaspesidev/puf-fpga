@@ -6,21 +6,18 @@
 #include <linux/bitops.h>
 #include <linux/fs.h>
 
+#include "puf_driver.h"
 #include "ftdi_interface.h"
 
 MODULE_AUTHOR("Andrea Aspesi <andrea1.aspesi@mail.polimi.it>");
 MODULE_DESCRIPTION("TERO PUF Driver");
 MODULE_LICENSE("GPL");
 
-#define DEBUG  1   // Turn off to avoid printing
 
 /**
  * Register driver for the device
  * --------------------------------
  */
-// Defines
-#define PUF_VENDOR_ID   0x0403  //FTDI_VID
-#define PUF_PRODUCT_ID  0x6010  //FTDI_8U2232C_PID
 // Prototypes
 static int puf_probe(struct usb_interface *, const struct usb_device_id *);
 static void puf_disconnect(struct usb_interface *);
@@ -57,10 +54,12 @@ static int __init puf_driver_init(void) {
     }
     // Register this driver with the USB subsystem
     result = usb_register(&puf_driver);
+    if (result) {
+        destroy_character_device();
 #if DEBUG
-    if (result)
         printk("usb_register failed. Error number %d", result);
 #endif
+    }
     return result;
 }
 module_init(puf_driver_init);
@@ -171,8 +170,6 @@ static void puf_disconnect(struct usb_interface *interface) {
  * PUF Communication
  * --------------------------------
  */
-#define PUF_AUTH_REQUEST    '\xAA'
-#define PUF_AUTH_RESPONSE   '\xAB'
 static int puf_auth(puf_data_t* data){
     char buff[2];
     // Stop async receive
@@ -190,69 +187,6 @@ static int puf_auth(puf_data_t* data){
     }
     return 0;
 }
-
-/*
-static void get_2comp_indices(unsigned int challenge_num, int *i, int *j){
-    // 0,1
-    // ...
-    // 0,15
-    // 1,2
-    // ...
-    // 1,15
-    // ...
-    // 14,15
-    int i_tmp, j_tmp, count;
-    count = 0;
-    for (i_tmp=0;i_tmp<PUF_FREQUENCIES/BATCHES_NUM;++i_tmp){
-        for (j_tmp=i_tmp+1;j_tmp<PUF_FREQUENCIES/BATCHES_NUM;++j_tmp){
-            ++count;
-            if (count == challenge_num){
-                break;
-            }
-        }
-        if (count == challenge_num){
-            break;
-        } 
-    }
-    *i = i_tmp;
-    *j = j_tmp;
-}
-
-static void generate_response_old(puf_data_t* data) {
-    // Start by grouping frequencies in batches.
-    // In each batch, put frequencies coming from the same type of TERO loop (8 types)
-    // Split batches in order to have a total of BATCHES_NUM, but by keeping the same
-    // type of loop for each batch
-    int curr_type, curr_freq, curr_batch, batch_index;
-    int i,j, curr_bit;
-    curr_batch = 0;
-    batch_index = 0;
-    for (curr_type = 0; curr_type < LOOP_TYPES; ++curr_type){
-        // Sample a frequency every LOOP_TYPES frequencies to stay in the same type
-        for (curr_freq=curr_type; curr_freq < PUF_FREQUENCIES; curr_freq+=LOOP_TYPES){
-            // freqs[curr_freq] is the next frequency of the same type of loop to add
-            data->batches[curr_batch][batch_index] = data->freqs[curr_freq]; // Add this frequency
-            ++batch_index;
-            if (batch_index == PUF_FREQUENCIES/BATCHES_NUM) {    // Batch completed
-                ++curr_batch;       // Move to next batch
-                batch_index = 0;    // Restart from the beginning
-            }
-        }
-    }
-    printk("[PUF Driver] Grouped frequencies in batches\n");
-    // Convert the challenge in the two compare indexes i,j for 2Comp
-    data->response_challenge = data->selected_challenge;
-    get_2comp_indices(data->response_challenge, &i, &j);
-    printk("[PUF Driver] Generating using i=%d, j=%d\n", i,j);
-    // Generate unique id, by comparing for each batch the freq in position i and j
-    for (curr_bit=0;curr_bit<BATCHES_NUM;++curr_bit){
-        data->response_id[curr_bit] = (data->batches[curr_bit][i] > data->batches[curr_bit][j]) ? '1' : '0';
-    }
-    data->response_id[curr_bit] = '\0'; // Add the terminator
-    data->status = DRIVER_RESPONSE_OK;
-    printk("[PUF Driver] Challenge: %d, Unique ID: %s\n", data->response_challenge, data->response_id);
-}
-*/
 
 static void generate_response(puf_data_t* data) {
     // Frequencies are already grouped by hardware.
@@ -461,6 +395,7 @@ static puf_data_t * init_driver_structure(struct usb_interface *interface, struc
 static void clear_driver_structure(struct usb_interface *interface) {
     puf_data_t *data = usb_get_intfdata(interface);
     ftdi_stop_async_receive(data);
+    cancel_work_sync(&data->worker_freqs);  // If the work is still pending, cancel it
     mutex_destroy(&data->lock);
     usb_set_intfdata (interface, NULL);
     usb_put_dev(data->udev);
@@ -475,16 +410,12 @@ static void clear_driver_structure(struct usb_interface *interface) {
  * - https://olegkutkov.me/2018/03/14/simple-linux-character-device-driver/#:~:text=A%20character%20device%20is%20one,by%20byte%2C%20like%20a%20stream.
  * --------------------------------
  */
-// Defines
-#define MAJOR_NUM 200
-#define BASE_NAME "teropuf"
-#define SUPPORTED_DEVICES 32
 
 // Static vars
 static struct class *tero_class = NULL;     // Char device class
 
 DEFINE_SPINLOCK(minor_lock);  // Lock used to protect the minor ops
-int minor_mask = 0;           // Mask used to find the next free minor number. Must have bits => SUPPORTED_DEVICES
+static int minor_mask = 0;           // Mask used to find the next free minor number. Must have bits => SUPPORTED_DEVICES
 
 // Prototypes
 static int tero_open(struct inode *, struct file *);
